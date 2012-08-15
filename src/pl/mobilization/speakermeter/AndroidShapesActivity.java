@@ -1,4 +1,4 @@
-package net.retstat1.starlab.shapes;
+package pl.mobilization.speakermeter;
 
 import android.app.Activity;
 import android.os.Bundle;
