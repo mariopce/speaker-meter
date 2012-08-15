@@ -8,7 +8,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Toast;
 
-public class AndroidShapesActivity extends Activity implements OnClickListener,
+public class VoteActivity extends Activity implements OnClickListener,
 		OnGlobalLayoutListener {
 	private View textViewUp;
 	private View textViewDown;
