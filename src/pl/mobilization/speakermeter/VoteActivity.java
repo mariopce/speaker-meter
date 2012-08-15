@@ -18,7 +18,7 @@ public class VoteActivity extends Activity implements OnClickListener,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.vote);
 
 		textViewUp = findViewById(R.id.textViewUp);
 		textViewDown = findViewById(R.id.textViewDown);
