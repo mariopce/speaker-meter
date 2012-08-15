@@ -1,6 +1,6 @@
 package pl.mobilization.speakermeter;
 
-import android.app.Activity;
+import roboguice.activity.RoboActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -8,13 +8,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Toast;
 
-public class VoteActivity extends Activity implements OnClickListener,
+public class VoteActivity extends RoboActivity implements OnClickListener,
 		OnGlobalLayoutListener {
 	private View textViewUp;
 	private View textViewDown;
 	private View root;
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

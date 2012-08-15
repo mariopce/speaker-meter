@@ -1,11 +1,17 @@
 package pl.mobilization.speakermeter;
 
-import android.app.Activity;
+import roboguice.activity.RoboActivity;
+import roboguice.inject.ContentView;
 import android.os.Bundle;
+import android.os.Handler;
 
-public class SpeakerListActivity extends Activity {
+@ContentView(R.layout.speaker_list)
+public class SpeakerListActivity extends RoboActivity {
+	private Handler handler;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 	}
 }
