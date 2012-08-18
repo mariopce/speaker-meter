@@ -1,5 +1,7 @@
 package pl.mobilization.speakermeter.speakers;
 
+import com.google.common.base.Strings;
+
 import pl.mobilization.speakermeter.dao.DaoMaster;
 import pl.mobilization.speakermeter.dao.DaoMaster.DevOpenHelper;
 import pl.mobilization.speakermeter.dao.DaoSession;
@@ -46,7 +48,7 @@ public class SpeakerDaoAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			convertView = inflater.inflate(android.R.layout.simple_list_item_2, parent);	
+			convertView = inflater.inflate(android.R.layout.simple_list_item_2, null);	
 		}
 		
 		Speaker item = getItem(position);
@@ -55,20 +57,25 @@ public class SpeakerDaoAdapter extends BaseAdapter {
 		TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
 		
 		text1.setText(item.getName());
-		text2.setText(item.getName());
+		text2.setText(item.getPresentation());
 		
 		return convertView;
 	}
 	
 	public void addItem(Speaker speaker) {
-		speakerDao.insertOrReplace(speaker);
+		speakerDao.insertOrReplace(ensureDbReady(speaker));
 		notifyDataSetChanged();
 	}
 	
 	public void addItems(Speaker[] speakers) {
 		for(Speaker speaker: speakers) {
-			speakerDao.insertOrReplace(speaker);
+			speakerDao.insertOrReplace(ensureDbReady(speaker));
 		}
 		notifyDataSetChanged();
+	}
+	
+	private Speaker ensureDbReady(Speaker speaker) {
+		speaker.setPresentation(Strings.nullToEmpty(speaker.getPresentation()));
+		return speaker;
 	}
 }

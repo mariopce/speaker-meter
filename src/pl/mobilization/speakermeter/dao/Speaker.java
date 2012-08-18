@@ -19,8 +19,6 @@ public class Speaker {
 
     public Speaker(Long id) {
         this.id = id;
-        
-        this.presentation = "";
     }
 
     public Speaker(Long id, String name, String presentation, int votes_up, int votes_down) {
