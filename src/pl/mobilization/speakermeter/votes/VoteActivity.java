@@ -1,8 +1,6 @@
 package pl.mobilization.speakermeter.votes;
 
 import pl.mobilization.speakermeter.R;
-import pl.mobilization.speakermeter.R.id;
-import pl.mobilization.speakermeter.R.layout;
 import roboguice.activity.RoboActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +11,7 @@ import android.widget.Toast;
 
 public class VoteActivity extends RoboActivity implements OnClickListener,
 		OnGlobalLayoutListener {
+	public static final String SPEAKER = "speaker";
 	private View textViewUp;
 	private View textViewDown;
 	private View root;

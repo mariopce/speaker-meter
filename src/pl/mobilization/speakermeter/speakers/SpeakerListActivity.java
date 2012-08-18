@@ -14,20 +14,24 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.dao.Speaker;
+import pl.mobilization.speakermeter.votes.VoteActivity;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
 @ContentView(R.layout.speaker_list)
-public class SpeakerListActivity extends RoboActivity {
+public class SpeakerListActivity extends RoboActivity implements OnItemClickListener {
 	private static final String TAG = SpeakerListActivity.class.getSimpleName();
 
 	@InjectView(R.id.progressBar)
@@ -49,7 +53,8 @@ public class SpeakerListActivity extends RoboActivity {
 		adapter = new SpeakerDaoAdapter(this);
 
 		listView.setAdapter(adapter);
-
+		listView.setOnItemClickListener(this);
+		
 		if (adapter.getCount() != 0) {
 			return;
 		}
@@ -103,5 +108,12 @@ public class SpeakerListActivity extends RoboActivity {
 			String responseString = out.toString();
 			return responseString;
 		}
+	}
+
+	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+		Intent intent = new Intent(this, VoteActivity.class);
+		intent.putExtra(VoteActivity.SPEAKER, (Speaker)adapter.getItemAtPosition(position));
+		
+		startActivity(intent);
 	}
 }

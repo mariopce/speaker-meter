@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".speakers.SpeakerListActivity"/>
-        <activity android:name=".votes.VotesActivity"/>
+        <activity android:name=".votes.VoteActivity"/>
     </application>
 
 </manifest>

@@ -51,14 +51,23 @@ public class SpeakerDaoAdapter extends BaseAdapter {
 			convertView = inflater.inflate(android.R.layout.simple_list_item_2, null);	
 		}
 		
-		Speaker item = getItem(position);
+		Speaker speaker = getItem(position);
 		
 		TextView text1 = (TextView) convertView.findViewById(android.R.id.text1);
 		TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
 		
-		text1.setText(item.getName());
-		text2.setText(item.getPresentation());
 		
+		convertView.setClickable(false);
+		convertView.setFocusable(false);
+		text1.setClickable(false);
+		text1.setFocusable(false);
+		text2.setClickable(false);
+		text2.setFocusable(false);
+		
+		text1.setText(speaker.getName());
+		text2.setText(speaker.getPresentation());
+		
+		convertView.setTag(speaker);
 		return convertView;
 	}
 	
