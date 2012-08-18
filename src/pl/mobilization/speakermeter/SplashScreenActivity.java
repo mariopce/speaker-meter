@@ -1,5 +1,6 @@
 package pl.mobilization.speakermeter;
 
+import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
 import roboguice.activity.RoboActivity;
 import android.content.Intent;
 import android.os.Bundle;

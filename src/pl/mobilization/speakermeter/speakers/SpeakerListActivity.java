@@ -1,4 +1,4 @@
-package pl.mobilization.speakermeter;
+package pl.mobilization.speakermeter.speakers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,6 +13,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import pl.mobilization.speakermeter.R;
+import pl.mobilization.speakermeter.R.id;
+import pl.mobilization.speakermeter.R.layout;
 import pl.mobilization.speakermeter.dao.DaoMaster;
 import pl.mobilization.speakermeter.dao.DaoMaster.DevOpenHelper;
 import pl.mobilization.speakermeter.dao.DaoSession;
