@@ -26,8 +26,8 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Presentation = new Property(2, String.class, "presentation", false, "PRESENTATION");
-        public final static Property Votes_up = new Property(3, int.class, "votes_up", false, "VOTES_UP");
-        public final static Property Votes_down = new Property(4, int.class, "votes_down", false, "VOTES_DOWN");
+        public final static Property Votes_up = new Property(3, int.class, "votesUp", false, "VOTES_UP");
+        public final static Property Votes_down = new Property(4, int.class, "votesDown", false, "VOTES_DOWN");
     };
 
 
@@ -45,7 +45,7 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
         db.execSQL("CREATE TABLE " + constraint + "'SPEAKER' (" + //
                 "'_id' INTEGER PRIMARY KEY ," + // 0: id
                 "'NAME' TEXT NOT NULL ," + // 1: name
-                "'PRESENTATION' TEXT NOT NULL ," + // 2: presentation
+                "'PRESENTATION' TEXT NULL ," + // 2: presentation
                 "'VOTES_UP' INTEGER NOT NULL ," + // 3: votes_up
                 "'VOTES_DOWN' INTEGER NOT NULL );"); // 4: votes_down
     }
@@ -67,8 +67,8 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
         }
         stmt.bindString(2, entity.getName());
         stmt.bindString(3, entity.getPresentation());
-        stmt.bindLong(4, entity.getVotes_up());
-        stmt.bindLong(5, entity.getVotes_down());
+        stmt.bindLong(4, entity.getVotesUp());
+        stmt.bindLong(5, entity.getVotesDown());
     }
 
     /** @inheritdoc */
@@ -96,8 +96,8 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.getString(offset + 1));
         entity.setPresentation(cursor.getString(offset + 2));
-        entity.setVotes_up(cursor.getInt(offset + 3));
-        entity.setVotes_down(cursor.getInt(offset + 4));
+        entity.setVotesUp(cursor.getInt(offset + 3));
+        entity.setVotesDown(cursor.getInt(offset + 4));
      }
     
     /** @inheritdoc */

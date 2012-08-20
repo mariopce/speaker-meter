@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, AndroidShapesActivity!</string>
-    <string name="app_name">AndroidShapes</string>
+    <string name="refresh">Refresh</string>
+    <string name="app_name">Speaker meter</string>
+    <string name="voteup">Vote up</string>
+    <string name="votedown">Vote down</string>
+    <string name="votes" formatted="false" >%d votes up %d votes down</string>
+    
 
 </resources>

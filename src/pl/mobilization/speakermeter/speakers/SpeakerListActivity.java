@@ -14,6 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.dao.Speaker;
+import pl.mobilization.speakermeter.downloader.AbstractDownloader;
 import pl.mobilization.speakermeter.votes.VoteActivity;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -22,6 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -55,58 +57,39 @@ public class SpeakerListActivity extends RoboActivity implements OnItemClickList
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
 		
-		if (adapter.getCount() != 0) {
-			return;
+		if (adapter.getCount() == 0) {
+			launchJsonUpdate();
 		}
 
-		launchJsonUpdate();
+		
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.votes_menu, menu);
+		return true;
+	}
+	
 	private void launchJsonUpdate() {
 		progressBar.setVisibility(View.VISIBLE);
-		handler.post(new JSonDownloader());
+		handler.postAtFrontOfQueue(new JSonDownloader());
 	}
 
-	private class JSonDownloader implements Runnable {
+	private class JSonDownloader extends AbstractDownloader implements Runnable {
 		private static final String URL = "http://mobilization.herokuapp.com/speakers/";
-
-		public void run() {
-			HttpClient httpclient = new DefaultHttpClient();
-			HttpResponse response;
-			try {
-				HttpGet request = new HttpGet(URI.create(URL));
-				request.addHeader("Accept", "application/json");
-
-				response = httpclient.execute(request);
-				StatusLine statusLine = response.getStatusLine();
-				if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-					// Closes the connection when status is not OK
-					response.getEntity().getContent().close();
-					return;
-				}
-
-				String json = extractPageAsString(response);
-
-				Gson gson = new Gson();
-				Speaker[] fromJson = gson.fromJson(json, Speaker[].class);
-				adapter.addItems(fromJson);
-			} catch (ClientProtocolException e) {
-				Log.e(TAG, "ClientProtocolException", e);
-			} catch (IOException e) {
-				Log.e(TAG, "IOException", e);
-			} finally {
-				progressBar.setVisibility(View.GONE);
-			}
-
+		
+		public void finalizer() {
+			progressBar.setVisibility(View.GONE);
 		}
 
-		private String extractPageAsString(HttpResponse response)
-				throws IOException {
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			response.getEntity().writeTo(out);
-			out.close();
-			String responseString = out.toString();
-			return responseString;
+		public void processAnswer(String json) {
+			Gson gson = new Gson();
+			Speaker[] fromJson = gson.fromJson(json, Speaker[].class);
+			adapter.addItems(fromJson);
+		}
+
+		public HttpGet createRequest() {
+			return new HttpGet(URI.create(URL));
 		}
 	}
 

@@ -31,6 +31,8 @@ public class SpeakerDaoAdapter extends BaseAdapter {
         daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();
         
+        daoSession.clear();
+        
         speakerDao = daoSession.getSpeakerDao();
 	}
 	
@@ -55,14 +57,6 @@ public class SpeakerDaoAdapter extends BaseAdapter {
 		
 		TextView text1 = (TextView) convertView.findViewById(android.R.id.text1);
 		TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
-		
-		
-		convertView.setClickable(false);
-		convertView.setFocusable(false);
-		text1.setClickable(false);
-		text1.setFocusable(false);
-		text2.setClickable(false);
-		text2.setFocusable(false);
 		
 		text1.setText(speaker.getName());
 		text2.setText(speaker.getPresentation());
