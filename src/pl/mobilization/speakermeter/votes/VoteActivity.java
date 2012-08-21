@@ -1,5 +1,6 @@
 package pl.mobilization.speakermeter.votes;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.apache.http.client.methods.HttpGet;
@@ -26,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -100,7 +102,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		if (voteRunnable != null) {
 			dialog.show();
-			handler.postDelayed(voteRunnable, 1000);
+			new Thread(voteRunnable).start();
 		}
 	}
 
@@ -169,6 +171,14 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		public HttpRequestBase createRequest() {
 			return new HttpGet(URI.create(String.format(URL, id, isUp ? UP
 					: DOWN)));
+		}
+
+		@Override
+		protected void exceptionHandler(Exception e) {
+			if(e instanceof IOException) {
+				Toast.makeText(VoteActivity.this, "Problem with connection to the Internet", Toast.LENGTH_LONG).show();
+			}
+			
 		}
 	}
 

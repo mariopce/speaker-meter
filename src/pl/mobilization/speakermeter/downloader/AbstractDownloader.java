@@ -35,13 +35,17 @@ public abstract class AbstractDownloader {
 			processAnswer(json);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocolException", e);
+			exceptionHandler(e);
 		} catch (IOException e) {
 			Log.e(TAG, "IOException", e);
+			exceptionHandler(e);
 		} finally {
 			finalizer();
 		}
 	}
 	
+	protected  abstract void exceptionHandler(Exception e);
+
 	private String extractPageAsString(HttpResponse response)
 			throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
