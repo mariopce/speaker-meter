@@ -6,6 +6,12 @@
     <string name="voteup">Vote up</string>
     <string name="votedown">Vote down</string>
     <string name="votes" formatted="false" >%d votes up %d votes down</string>
-    
-
+    <string name="presentation">Presentation title</string>
+    <string name="speaker">Speaker Name</string>
+    <string name="update">Udating</string>
+    <string name="obtaining_list">Obtaining list of speakers</string>
+    <string name="problem_connection" formatted="false" >Problem with connection to the Internet</string>
+    <string name="speaker_voted_down"  formatted="false" >You voted %s down</string>
+    <string name="speaker_voted_up">You voted %s up</string>
+    <string name="sending_vote">Sending your vote</string>
 </resources>

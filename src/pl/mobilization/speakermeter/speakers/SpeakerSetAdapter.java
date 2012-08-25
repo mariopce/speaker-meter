@@ -1,47 +1,42 @@
 package pl.mobilization.speakermeter.speakers;
 
-import com.google.common.base.Strings;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
-import pl.mobilization.speakermeter.dao.DaoMaster;
-import pl.mobilization.speakermeter.dao.DaoMaster.DevOpenHelper;
-import pl.mobilization.speakermeter.dao.DaoSession;
 import pl.mobilization.speakermeter.dao.Speaker;
-import pl.mobilization.speakermeter.dao.SpeakerDao;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class SpeakerDaoAdapter extends BaseAdapter {
-	LayoutInflater inflater = null;
-	private SQLiteDatabase db;
-	private DaoMaster daoMaster;
-	private DaoSession daoSession;
-	private SpeakerDao speakerDao;
+import com.google.common.collect.Iterators;
 
-	public SpeakerDaoAdapter(Context context) {
+public class SpeakerSetAdapter extends BaseAdapter {
+	LayoutInflater inflater = null;
+	private Set<Speaker> backingSet = new TreeSet<Speaker>(new Comparator<Speaker>() {
+
+		public int compare(Speaker lhs, Speaker rhs) {
+			return lhs.getName().compareTo(rhs.getName());
+		}
+	});
+
+	public SpeakerSetAdapter(Context context, Collection<Speaker> list) {
 		inflater = (LayoutInflater) context.getSystemService
 			      (Context.LAYOUT_INFLATER_SERVICE);
 		
-		DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, "speakers-db", null);
-        db = helper.getWritableDatabase();
-        daoMaster = new DaoMaster(db);
-        daoSession = daoMaster.newSession();
-        
-        daoSession.clear();
-        
-        speakerDao = daoSession.getSpeakerDao();
+		backingSet.addAll(list);
 	}
 	
 	public int getCount() {
-		return (int) speakerDao.count();
+		return backingSet.size();
 	}
 
 	public Speaker getItem(int position) {
-		return speakerDao.queryBuilder().build().listLazy().get(position);
+		return Iterators.get(backingSet.iterator(), position);
 	}
 
 	public long getItemId(int position) {
@@ -66,19 +61,14 @@ public class SpeakerDaoAdapter extends BaseAdapter {
 	}
 	
 	public void addItem(Speaker speaker) {
-		speakerDao.insertOrReplace(ensureDbReady(speaker));
+		backingSet.add(speaker);
 		notifyDataSetChanged();
 	}
 	
 	public void addItems(Speaker[] speakers) {
 		for(Speaker speaker: speakers) {
-			speakerDao.insertOrReplace(ensureDbReady(speaker));
+			backingSet.add(speaker);
 		}
 		notifyDataSetChanged();
-	}
-	
-	private Speaker ensureDbReady(Speaker speaker) {
-		speaker.setPresentation(Strings.nullToEmpty(speaker.getPresentation()));
-		return speaker;
 	}
 }

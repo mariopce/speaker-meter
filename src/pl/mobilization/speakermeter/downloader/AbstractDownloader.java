@@ -2,25 +2,37 @@ package pl.mobilization.speakermeter.downloader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import android.util.Log;
 
 public abstract class AbstractDownloader {
 	private static final String TAG = AbstractDownloader.class.getName();
+
 	public void run() {
-		HttpClient httpclient = new DefaultHttpClient();
+		DefaultHttpClient httpclient = new DefaultHttpClient();
 		HttpResponse response;
 		try {
-			HttpRequestBase request = createRequest();
+			URI uri = createURI();
+			HttpRequestBase request = new HttpGet(uri);
 			request.addHeader("Accept", "application/json");
+
+			CookieStore cookieStore = httpclient.getCookieStore();
+			addCookies(uri, cookieStore);
+
+			httpclient.setCookieStore(cookieStore);
 
 			response = httpclient.execute(request);
 			StatusLine statusLine = response.getStatusLine();
@@ -43,8 +55,11 @@ public abstract class AbstractDownloader {
 			finalizer();
 		}
 	}
-	
-	protected  abstract void exceptionHandler(Exception e);
+
+
+	public abstract URI createURI();
+
+	protected abstract void exceptionHandler(Exception e);
 
 	private String extractPageAsString(HttpResponse response)
 			throws IOException {
@@ -59,5 +74,6 @@ public abstract class AbstractDownloader {
 
 	public abstract void processAnswer(String json);
 
-	public abstract HttpRequestBase createRequest();
+	public void addCookies(URI uri, CookieStore cookieStore) {
+	}
 }

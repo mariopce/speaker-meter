@@ -27,7 +27,7 @@
         <Button
             android:id="@+id/textViewDown"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:background="@drawable/rectangle_red"
             android:drawableBottom="@drawable/thumbs_down"
             android:gravity="center"
@@ -42,7 +42,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="BDD w androidzie"
+        android:text="@string/presentation"
+        android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/black" />
 
@@ -52,7 +53,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/textViewPresentation"
         android:layout_centerHorizontal="true"
-        android:text="Marek Defeciński"
+        android:gravity="center"
+        android:text="@string/speaker"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="@android:color/black" />
 

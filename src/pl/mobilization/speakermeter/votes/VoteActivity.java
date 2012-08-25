@@ -2,17 +2,21 @@ package pl.mobilization.speakermeter.votes;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.CookieStore;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.BasicClientCookie;
 
 import pl.mobilization.speakermeter.R;
+import pl.mobilization.speakermeter.SpeakerMeterApplication;
 import pl.mobilization.speakermeter.dao.DaoMaster;
 import pl.mobilization.speakermeter.dao.DaoMaster.DevOpenHelper;
 import pl.mobilization.speakermeter.dao.DaoSession;
 import pl.mobilization.speakermeter.dao.Speaker;
 import pl.mobilization.speakermeter.dao.SpeakerDao;
 import pl.mobilization.speakermeter.downloader.AbstractDownloader;
+import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -21,7 +25,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -34,7 +37,9 @@ import com.google.gson.Gson;
 @ContentView(R.layout.vote)
 public class VoteActivity extends RoboActivity implements OnClickListener,
 		OnGlobalLayoutListener {
-	public static final String SPEAKER = "speaker";
+	public static final String SPEAKER_ID = "speaker_id";
+	private static final long UKNOWN_SPEAKER_ID = 0;
+
 	@InjectView(R.id.textViewUp)
 	private View textViewUp;
 	@InjectView(R.id.textViewDown)
@@ -47,7 +52,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	private TextView textViewPresentation;
 
 	private Speaker speaker;
-	private Handler handler;
 	private SQLiteDatabase db;
 	private DaoMaster daoMaster;
 	private DaoSession daoSession;
@@ -57,27 +61,43 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		handler = new Handler();
-		
-		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "speakers-db", null);
-        db = helper.getWritableDatabase();
-        daoMaster = new DaoMaster(db);
-        daoSession = daoMaster.newSession();
-        speakerDao = daoSession.getSpeakerDao();
-        
 		root.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
 		textViewUp.setOnClickListener(this);
 		textViewDown.setOnClickListener(this);
+	}
+
+	@Override
+	protected void onResume() {
+		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "speakers-db",
+				null);
+		db = helper.getWritableDatabase();
+		daoMaster = new DaoMaster(db);
+		daoSession = daoMaster.newSession();
+		speakerDao = daoSession.getSpeakerDao();
 
 		Intent intent = getIntent();
-		Object object = intent.getExtras().get(SPEAKER);
-		if (object == null) {
+		long speaker_id = intent.getLongExtra(SPEAKER_ID, UKNOWN_SPEAKER_ID);
+		if (speaker_id == UKNOWN_SPEAKER_ID) {
 			finish();
 			return;
 		}
 
-		setSpeaker((Speaker) object);
+		Speaker speaker = speakerDao.load(speaker_id);
+
+		if (speaker == null) {
+			finish();
+			return;
+		}
+		setSpeaker(speaker);
+
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		db.close();
+		super.onPause();
 	}
 
 	private void setSpeaker(Speaker speaker) {
@@ -91,16 +111,21 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		VoteRunnable voteRunnable = null;
 		ProgressDialog dialog = null;
 		if (view == textViewUp) {
-			dialog = ProgressDialog.show(this, "Sending your vote",
-					String.format("You voted %s up", speaker.getName()), false);
+			dialog = ProgressDialog.show(this,
+					getString(R.string.sending_vote),
+					getString(R.string.speaker_voted_up, speaker.getName()),
+					false);
 			voteRunnable = new VoteRunnable(dialog, speaker.getId(), true);
 		} else if (view == textViewDown) {
-			dialog = ProgressDialog.show(this, "Sending your vote",
-					String.format("You voted %s down", speaker.getName()), false);
+			dialog = ProgressDialog.show(this,
+					getString(R.string.sending_vote),
+					getString(R.string.speaker_voted_down, speaker.getName()),
+					false);
 			voteRunnable = new VoteRunnable(dialog, speaker.getId(), false);
 		}
 
 		if (voteRunnable != null) {
+			dialog.setOwnerActivity(this);
 			dialog.show();
 			new Thread(voteRunnable).start();
 		}
@@ -118,20 +143,16 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		int votesUp = speaker.getVotesUp();
 		int votesDown = speaker.getVotesDown();
 
-		if(height == 0 || (votesDown == 0 && votesUp == 0))
+		if (height == 0 || (votesDown == 0 && votesUp == 0))
 			return;
 
 		int votesUpHeight = height / 3 * (votesDown + 2 * votesUp)
 				/ (votesDown + votesUp);
-		int votesDownHeight = height  - votesUpHeight;
 
 		LayoutParams layoutParams = textViewUp.getLayoutParams();
 		layoutParams.height = votesUpHeight;
 		textViewUp.setLayoutParams(layoutParams);
 
-		layoutParams = textViewDown.getLayoutParams();
-		layoutParams.height = votesDownHeight;
-		textViewDown.setLayoutParams(layoutParams);
 	}
 
 	private class VoteRunnable extends AbstractDownloader implements Runnable {
@@ -151,14 +172,16 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		@Override
 		public void finalizer() {
-			dialog.dismiss();
+			if (!dialog.getOwnerActivity().isFinishing())
+				dialog.dismiss();
 		}
 
 		@Override
 		public void processAnswer(String json) {
 			Gson gson = new Gson();
 			final Speaker updatedSpeaker = gson.fromJson(json, Speaker.class);
-			speakerDao.insertOrReplace(updatedSpeaker);
+			if (db.isOpen())
+				speakerDao.insertOrReplace(updatedSpeaker);
 
 			runOnUiThread(new Runnable() {
 				public void run() {
@@ -167,19 +190,32 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			});
 		}
 
+		public URI createURI() {
+			return URI.create(String.format(URL, id, isUp ? UP : DOWN));
+		}
+
 		@Override
-		public HttpRequestBase createRequest() {
-			return new HttpGet(URI.create(String.format(URL, id, isUp ? UP
-					: DOWN)));
+		public void addCookies(URI uri, CookieStore cookieStore) {
+			BasicClientCookie cookie = new BasicClientCookie(SpeakerMeterApplication.UUID,
+					SpeakerMeterApplication.getUUID());
+			cookie.setDomain(uri.getHost());
+			cookie.setPath(uri.getPath());
+			cookie.setValue(SpeakerMeterApplication.getUUID());
+			cookie.setExpiryDate(new Date(2012, 12, 12));
+			cookieStore.addCookie(cookie);
 		}
 
 		@Override
 		protected void exceptionHandler(Exception e) {
-			if(e instanceof IOException) {
-				Toast.makeText(VoteActivity.this, "Problem with connection to the Internet", Toast.LENGTH_LONG).show();
+			if (e instanceof IOException) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(VoteActivity.this,
+								getString(R.string.problem_connection),
+								Toast.LENGTH_LONG).show();
+					}
+				});
 			}
-			
 		}
 	}
-
 }
