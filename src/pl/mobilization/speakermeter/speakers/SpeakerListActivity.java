@@ -16,6 +16,7 @@ import pl.mobilization.speakermeter.votes.VoteActivity;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -131,22 +132,13 @@ public class SpeakerListActivity extends RoboActivity implements
 		}
 
 		@Override
-		protected void exceptionHandler(Exception e) {
-			if (e instanceof IOException) {
-				runOnUiThread(new Runnable() {
-					
-					public void run() {
-						Toast.makeText(SpeakerListActivity.this,
-								"Problem with connection to the Internet",
-								Toast.LENGTH_LONG).show();
-					}
-				});				
-			}
+		public URI createURI() {
+			return URI.create(URL);
 		}
 
 		@Override
-		public URI createURI() {
-			return URI.create(URL);
+		public Activity getEnclosingClass() {
+			return SpeakerListActivity.this;
 		}
 	}
 

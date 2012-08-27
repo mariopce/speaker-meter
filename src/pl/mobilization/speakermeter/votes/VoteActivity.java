@@ -1,11 +1,9 @@
 package pl.mobilization.speakermeter.votes;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 
 import org.apache.http.client.CookieStore;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
 import pl.mobilization.speakermeter.R;
@@ -16,10 +14,10 @@ import pl.mobilization.speakermeter.dao.DaoSession;
 import pl.mobilization.speakermeter.dao.Speaker;
 import pl.mobilization.speakermeter.dao.SpeakerDao;
 import pl.mobilization.speakermeter.downloader.AbstractDownloader;
-import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -30,7 +28,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -206,16 +203,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		}
 
 		@Override
-		protected void exceptionHandler(Exception e) {
-			if (e instanceof IOException) {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						Toast.makeText(VoteActivity.this,
-								getString(R.string.problem_connection),
-								Toast.LENGTH_LONG).show();
-					}
-				});
-			}
+		public Activity getEnclosingClass() {
+			return VoteActivity.this;
 		}
 	}
 }

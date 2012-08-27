@@ -9,14 +9,17 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 
+import pl.mobilization.speakermeter.R;
+import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 public abstract class AbstractDownloader {
 	private static final String TAG = AbstractDownloader.class.getName();
@@ -24,6 +27,7 @@ public abstract class AbstractDownloader {
 	public void run() {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		HttpResponse response;
+		Runnable exceptionRunnable = null;
 		try {
 			URI uri = createURI();
 			HttpRequestBase request = new HttpGet(uri);
@@ -45,21 +49,42 @@ public abstract class AbstractDownloader {
 			String json = extractPageAsString(response);
 
 			processAnswer(json);
-		} catch (ClientProtocolException e) {
-			Log.e(TAG, "ClientProtocolException", e);
+		} catch (Exception e) {
+			Log.e(TAG, "Exception", e);
 			exceptionHandler(e);
-		} catch (IOException e) {
-			Log.e(TAG, "IOException", e);
-			exceptionHandler(e);
-		} finally {
+		}
+		finally {
 			finalizer();
 		}
 	}
+	
+	public abstract Activity getEnclosingClass();
 
 
 	public abstract URI createURI();
 
-	protected abstract void exceptionHandler(Exception e);
+	private void exceptionHandler(Exception e) {
+		final String exceptionString = getExceptionString(e);
+		getEnclosingClass().runOnUiThread(new Runnable() {
+			
+			public void run() {
+				Toast.makeText(getEnclosingClass(),
+						exceptionString, 
+						Toast.LENGTH_LONG).show();
+			}
+		});
+		
+	}
+
+	private String getExceptionString(Exception e) {
+		if (e instanceof IOException) {
+			return getEnclosingClass().getResources().getString(R.string.problem_connection, e.getLocalizedMessage());
+		}
+		if (e instanceof JsonParseException) {
+			return getEnclosingClass().getResources().getString(R.string.problem_json, e.getLocalizedMessage());
+		}
+		return getEnclosingClass().getResources().getString(R.string.problem_uknown, e.getLocalizedMessage());
+	}
 
 	private String extractPageAsString(HttpResponse response)
 			throws IOException {
@@ -72,7 +97,7 @@ public abstract class AbstractDownloader {
 
 	public abstract void finalizer();
 
-	public abstract void processAnswer(String json);
+	public abstract void processAnswer(String json) throws JsonSyntaxException;
 
 	public void addCookies(URI uri, CookieStore cookieStore) {
 	}
