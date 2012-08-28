@@ -168,8 +168,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		}
 
 		@Override
-		public void finalizer() {
-			if (!dialog.getOwnerActivity().isFinishing())
+		public void exit() {
+			if (dialog.isShowing())
 				dialog.dismiss();
 		}
 
