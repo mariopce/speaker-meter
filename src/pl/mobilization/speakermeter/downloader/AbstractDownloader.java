@@ -7,7 +7,6 @@ import java.net.URI;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -54,7 +53,7 @@ public abstract class AbstractDownloader {
 			exceptionHandler(e);
 		}
 		finally {
-			finalizer();
+			exit();
 		}
 	}
 	
@@ -95,7 +94,7 @@ public abstract class AbstractDownloader {
 		return responseString;
 	}
 
-	public abstract void finalizer();
+	public abstract void exit();
 
 	public abstract void processAnswer(String json) throws JsonSyntaxException;
 

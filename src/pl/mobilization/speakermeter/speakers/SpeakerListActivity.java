@@ -1,9 +1,6 @@
 package pl.mobilization.speakermeter.speakers;
 
-import java.io.IOException;
 import java.net.URI;
-
-import org.apache.http.client.methods.HttpGet;
 
 import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.dao.DaoMaster;
@@ -27,7 +24,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -112,8 +108,9 @@ public class SpeakerListActivity extends RoboActivity implements
 			this.progressDialog = progressDialog;
 		}
 
-		public void finalizer() {
-			progressDialog.dismiss();
+		public void exit() {
+			if(progressDialog.isShowing())
+				progressDialog.dismiss();
 		}
 
 		public void processAnswer(String json) {
