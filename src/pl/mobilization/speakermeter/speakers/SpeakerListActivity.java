@@ -14,6 +14,7 @@ import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,12 +33,12 @@ public class SpeakerListActivity extends RoboActivity implements
 		OnItemClickListener {
 	private static final String TAG = SpeakerListActivity.class.getSimpleName();
 
+	private static final int PROGRESS_DIALOG_ID = 12;
+
 	@InjectView(R.id.listViewSpeakers)
 	private ListView listView;
 
 	private SpeakerSetAdapter adapter;
-
-	private ProgressDialog progressDialog;
 
 	private DaoMaster daoMaster;
 
@@ -64,11 +65,13 @@ public class SpeakerListActivity extends RoboActivity implements
 
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
+		
+		super.onResume();
 
 		if (adapter.getCount() == 0) {
 			launchJsonUpdate();
 		}
-		super.onResume();
+		
 	}
 	
 	@Override
@@ -91,26 +94,30 @@ public class SpeakerListActivity extends RoboActivity implements
 		getMenuInflater().inflate(R.menu.votes_menu, menu);
 		return true;
 	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		return onCreateDialog(id, null);
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle bundle) {
+		if (id == PROGRESS_DIALOG_ID) {
+			return ProgressDialog.show(this, getString(R.string.update), getString(R.string.obtaining_list));
+		}
+		return super.onCreateDialog(id);
+	}
 
 	private void launchJsonUpdate() {
-		progressDialog = ProgressDialog.show(this, "Update",
-				"Obtaining list of speakers");
-		progressDialog.setOwnerActivity(this);
-		progressDialog.show();
-		new Thread((new JSonDownloader(progressDialog))).start();
+		showDialog(PROGRESS_DIALOG_ID);
+		new Thread((new JSonDownloader())).start();
 	}
 
 	private class JSonDownloader extends AbstractDownloader implements Runnable {
 		private static final String URL = "http://mobilization.herokuapp.com/speakers/";
-		private ProgressDialog progressDialog;
-
-		public JSonDownloader(ProgressDialog progressDialog) {
-			this.progressDialog = progressDialog;
-		}
-
-		public void exit() {
-			if(progressDialog.isShowing())
-				progressDialog.dismiss();
+		
+		public void cleanUp() {
+			removeDialog(PROGRESS_DIALOG_ID);
 		}
 
 		public void processAnswer(String json) {
