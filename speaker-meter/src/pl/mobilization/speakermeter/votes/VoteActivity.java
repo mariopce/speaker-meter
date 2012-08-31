@@ -36,6 +36,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		OnGlobalLayoutListener {
 	public static final String SPEAKER_ID = "speaker_id";
 	private static final long UKNOWN_SPEAKER_ID = 0;
+	private static final int PROGRESS_DIALOG_ID = 1;
 
 	@InjectView(R.id.textViewUp)
 	private View textViewUp;
@@ -53,6 +54,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	private DaoMaster daoMaster;
 	private DaoSession daoSession;
 	private SpeakerDao speakerDao;
+	private boolean isUp = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +98,25 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		db.close();
 		super.onPause();
 	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		return onCreateDialog(id, null);
+	}
 
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		if (id == PROGRESS_DIALOG_ID) {
+			return ProgressDialog.show(
+					this,
+					getString(R.string.sending_vote),
+					getString(R.string.speaker_voted, speaker.getName(),
+							isUp ? getString(R.string.up)
+							: getString(R.string.down)));
+		}
+		return super.onCreateDialog(id, args);
+	}
+	
 	private void setSpeaker(Speaker speaker) {
 		this.speaker = speaker;
 		textViewWho.setText(speaker.getName());
@@ -106,26 +126,11 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 	public void onClick(View view) {
 		VoteRunnable voteRunnable = null;
-		ProgressDialog dialog = null;
-		if (view == textViewUp) {
-			dialog = ProgressDialog.show(this,
-					getString(R.string.sending_vote),
-					getString(R.string.speaker_voted_up, speaker.getName()),
-					false);
-			voteRunnable = new VoteRunnable(dialog, speaker.getId(), true);
-		} else if (view == textViewDown) {
-			dialog = ProgressDialog.show(this,
-					getString(R.string.sending_vote),
-					getString(R.string.speaker_voted_down, speaker.getName()),
-					false);
-			voteRunnable = new VoteRunnable(dialog, speaker.getId(), false);
-		}
-
-		if (voteRunnable != null) {
-			dialog.setOwnerActivity(this);
-			dialog.show();
-			new Thread(voteRunnable).start();
-		}
+		isUp = view == textViewUp; 
+		showDialog(PROGRESS_DIALOG_ID);
+		
+		voteRunnable = new VoteRunnable(speaker.getId(), true);
+		new Thread(voteRunnable).start();
 	}
 
 	public void onGlobalLayout() {
@@ -159,18 +164,15 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		private static final String UP = "up";
 		private long id;
 		private boolean isUp;
-		private Dialog dialog;
 
-		public VoteRunnable(Dialog dialog, long id, boolean isUp) {
+		public VoteRunnable(long id, boolean isUp) {
 			this.id = id;
 			this.isUp = isUp;
-			this.dialog = dialog;
 		}
 
 		@Override
-		public void exit() {
-			if (dialog.isShowing())
-				dialog.dismiss();
+		public void cleanUp() {
+			removeDialog(PROGRESS_DIALOG_ID);
 		}
 
 		@Override
@@ -193,7 +195,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		@Override
 		public void addCookies(URI uri, CookieStore cookieStore) {
-			BasicClientCookie cookie = new BasicClientCookie(SpeakerMeterApplication.UUID,
+			BasicClientCookie cookie = new BasicClientCookie(
+					SpeakerMeterApplication.UUID,
 					SpeakerMeterApplication.getUUID());
 			cookie.setDomain(uri.getHost());
 			cookie.setPath(uri.getPath());

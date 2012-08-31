@@ -23,10 +23,54 @@ import com.google.gson.JsonSyntaxException;
 public abstract class AbstractDownloader {
 	private static final String TAG = AbstractDownloader.class.getName();
 
+	public void addCookies(URI uri, CookieStore cookieStore) {
+	}
+
+	public abstract URI createURI();
+
+	private void exceptionHandler(Exception e) {
+		final String exceptionString = getExceptionString(e);
+		getEnclosingClass().runOnUiThread(new Runnable() {
+
+			public void run() {
+				Toast.makeText(getEnclosingClass(), exceptionString,
+						Toast.LENGTH_LONG).show();
+			}
+		});
+
+	}
+
+	public abstract void cleanUp();
+
+	private String extractPageAsString(HttpResponse response)
+			throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		response.getEntity().writeTo(out);
+		out.close();
+		String responseString = out.toString();
+		return responseString;
+	}
+
+	public abstract Activity getEnclosingClass();
+
+	private String getExceptionString(Exception e) {
+		if (e instanceof IOException) {
+			return getEnclosingClass().getResources().getString(
+					R.string.problem_connection, e.getLocalizedMessage());
+		}
+		if (e instanceof JsonParseException) {
+			return getEnclosingClass().getResources().getString(
+					R.string.problem_json, e.getLocalizedMessage());
+		}
+		return getEnclosingClass().getResources().getString(
+				R.string.problem_uknown, e.getLocalizedMessage());
+	}
+
+	public abstract void processAnswer(String json) throws JsonSyntaxException;
+
 	public void run() {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		HttpResponse response;
-		Runnable exceptionRunnable = null;
 		try {
 			URI uri = createURI();
 			HttpRequestBase request = new HttpGet(uri);
@@ -51,53 +95,8 @@ public abstract class AbstractDownloader {
 		} catch (Exception e) {
 			Log.e(TAG, "Exception", e);
 			exceptionHandler(e);
+		} finally {
+			cleanUp();
 		}
-		finally {
-			exit();
-		}
-	}
-	
-	public abstract Activity getEnclosingClass();
-
-
-	public abstract URI createURI();
-
-	private void exceptionHandler(Exception e) {
-		final String exceptionString = getExceptionString(e);
-		getEnclosingClass().runOnUiThread(new Runnable() {
-			
-			public void run() {
-				Toast.makeText(getEnclosingClass(),
-						exceptionString, 
-						Toast.LENGTH_LONG).show();
-			}
-		});
-		
-	}
-
-	private String getExceptionString(Exception e) {
-		if (e instanceof IOException) {
-			return getEnclosingClass().getResources().getString(R.string.problem_connection, e.getLocalizedMessage());
-		}
-		if (e instanceof JsonParseException) {
-			return getEnclosingClass().getResources().getString(R.string.problem_json, e.getLocalizedMessage());
-		}
-		return getEnclosingClass().getResources().getString(R.string.problem_uknown, e.getLocalizedMessage());
-	}
-
-	private String extractPageAsString(HttpResponse response)
-			throws IOException {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		response.getEntity().writeTo(out);
-		out.close();
-		String responseString = out.toString();
-		return responseString;
-	}
-
-	public abstract void exit();
-
-	public abstract void processAnswer(String json) throws JsonSyntaxException;
-
-	public void addCookies(URI uri, CookieStore cookieStore) {
 	}
 }
