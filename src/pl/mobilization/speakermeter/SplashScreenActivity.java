@@ -13,11 +13,8 @@ public class SplashScreenActivity extends RoboSplashActivity {
 	    super.onCreate(savedInstanceState);
 	    
 	    setContentView(R.layout.splash);
-	
-	    Intent intent = new Intent(this, SpeakerListActivity.class);
-		startActivity(intent);
 	}
-
+	
 	@Override
 	protected void startNextActivity() {
 		startActivity(new Intent(this, SpeakerListActivity.class));
