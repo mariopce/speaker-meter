@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -34,6 +35,8 @@ import com.google.gson.Gson;
 @ContentView(R.layout.vote)
 public class VoteActivity extends RoboActivity implements OnClickListener,
 		OnGlobalLayoutListener {
+
+	private static final String TAG = VoteActivity.class.getName();
 	public static final String SPEAKER_ID = "speaker_id";
 	private static final long UKNOWN_SPEAKER_ID = 0;
 	private static final int PROGRESS_DIALOG_ID = 1;
@@ -68,7 +71,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		textViewUp.setOnClickListener(this);
 		textViewDown.setOnClickListener(this);
-		
+
 		title = getString(R.string.sending_vote);
 		up = getString(R.string.up);
 		down = getString(R.string.down);
@@ -106,22 +109,22 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		db.close();
 		super.onPause();
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		if (id == PROGRESS_DIALOG_ID) {
 			String name = speaker.getName();
 			String description = getString(R.string.speaker_voted, name,
-					isUp ? up
-					: down);
+					isUp ? up : down);
 			ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setTitle(title);
 			dialog.setMessage(description);
+			dialog.setCancelable(true);
 			return dialog;
 		}
 		return super.onCreateDialog(id);
 	}
-	
+
 	private void setSpeaker(Speaker speaker) {
 		this.speaker = speaker;
 		textViewWho.setText(speaker.getName());
@@ -131,9 +134,10 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 	public void onClick(View view) {
 		VoteRunnable voteRunnable = null;
-		isUp = view == textViewUp; 
+		isUp = view == textViewUp;
+		Log.d(TAG, String.format("%s.showDialog()", this));
 		showDialog(PROGRESS_DIALOG_ID);
-		
+
 		voteRunnable = new VoteRunnable(speaker.getId(), true);
 		new Thread(voteRunnable).start();
 	}
@@ -164,6 +168,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 	private class VoteRunnable extends AbstractDownloader implements Runnable {
 
+		private static final int VOTE_LATTENCY = 5000;
 		private static final String URL = "http://mobilization.herokuapp.com/speakers/%d/vote%s";
 		private static final String DOWN = "down";
 		private static final String UP = "up";
@@ -177,6 +182,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		@Override
 		public void cleanUp() {
+			Log.d(TAG, String.format("%s.remove()", VoteActivity.this));
 			removeDialog(PROGRESS_DIALOG_ID);
 		}
 
@@ -200,12 +206,13 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		@Override
 		public void addCookies(URI uri, CookieStore cookieStore) {
+			String uuid = ((SpeakerMeterApplication)getApplication()).getUUID();
 			BasicClientCookie cookie = new BasicClientCookie(
 					SpeakerMeterApplication.UUID,
-					SpeakerMeterApplication.getUUID());
+					uuid);
 			cookie.setDomain(uri.getHost());
 			cookie.setPath(uri.getPath());
-			cookie.setValue(SpeakerMeterApplication.getUUID());
+			cookie.setValue(uuid);
 			cookie.setExpiryDate(new Date(2012, 12, 12));
 			cookieStore.addCookie(cookie);
 		}
@@ -215,14 +222,14 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			return VoteActivity.this;
 		}
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		Speaker speaker = (Speaker) savedInstanceState.getSerializable(SPEAKER);
 		setSpeaker(speaker);
 		super.onRestoreInstanceState(savedInstanceState);
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putSerializable(SPEAKER, speaker);

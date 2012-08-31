@@ -8,7 +8,7 @@ import android.telephony.TelephonyManager;
 
 public class SpeakerMeterApplication extends Application {
 	public static final String UUID = "uuid";
-	private static String uuid;
+	private String uuid;
 
 	@Override
 	public void onCreate() {
@@ -39,7 +39,7 @@ public class SpeakerMeterApplication extends Application {
 		return deviceId;
 	}
 	
-	public static String getUUID() {
+	public String getUUID() {
 		return uuid;
 	}
 }
