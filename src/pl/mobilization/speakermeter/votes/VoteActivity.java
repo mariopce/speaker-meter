@@ -37,6 +37,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	public static final String SPEAKER_ID = "speaker_id";
 	private static final long UKNOWN_SPEAKER_ID = 0;
 	private static final int PROGRESS_DIALOG_ID = 1;
+	private static final String SPEAKER = "speaker";
 
 	@InjectView(R.id.textViewUp)
 	private View textViewUp;
@@ -55,6 +56,9 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	private DaoSession daoSession;
 	private SpeakerDao speakerDao;
 	private boolean isUp = false;
+	private String down;
+	private String up;
+	private String title;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,10 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		textViewUp.setOnClickListener(this);
 		textViewDown.setOnClickListener(this);
+		
+		title = getString(R.string.sending_vote);
+		up = getString(R.string.up);
+		down = getString(R.string.down);
 	}
 
 	@Override
@@ -101,20 +109,17 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		return onCreateDialog(id, null);
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id, Bundle args) {
 		if (id == PROGRESS_DIALOG_ID) {
-			return ProgressDialog.show(
-					this,
-					getString(R.string.sending_vote),
-					getString(R.string.speaker_voted, speaker.getName(),
-							isUp ? getString(R.string.up)
-							: getString(R.string.down)));
+			String name = speaker.getName();
+			String description = getString(R.string.speaker_voted, name,
+					isUp ? up
+					: down);
+			ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setTitle(title);
+			dialog.setMessage(description);
+			return dialog;
 		}
-		return super.onCreateDialog(id, args);
+		return super.onCreateDialog(id);
 	}
 	
 	private void setSpeaker(Speaker speaker) {
@@ -209,5 +214,18 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		public Activity getEnclosingClass() {
 			return VoteActivity.this;
 		}
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		Speaker speaker = (Speaker) savedInstanceState.getSerializable(SPEAKER);
+		setSpeaker(speaker);
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putSerializable(SPEAKER, speaker);
+		super.onSaveInstanceState(outState);
 	}
 }

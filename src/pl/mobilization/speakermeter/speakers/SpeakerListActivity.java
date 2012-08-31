@@ -48,6 +48,11 @@ public class SpeakerListActivity extends RoboActivity implements
 
 	private SQLiteDatabase db;
 
+	private CharSequence title;
+
+	private CharSequence description;
+	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,6 +76,9 @@ public class SpeakerListActivity extends RoboActivity implements
 		if (adapter.getCount() == 0) {
 			launchJsonUpdate();
 		}
+		
+		 title = getString(R.string.update);
+		 description = getString(R.string.obtaining_list);
 		
 	}
 	
@@ -97,13 +105,11 @@ public class SpeakerListActivity extends RoboActivity implements
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		return onCreateDialog(id, null);
-	}
-	
-	@Override
-	protected Dialog onCreateDialog(int id, Bundle bundle) {
 		if (id == PROGRESS_DIALOG_ID) {
-			return ProgressDialog.show(this, getString(R.string.update), getString(R.string.obtaining_list));
+			ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setTitle(title);
+			dialog.setMessage(description);
+			return dialog;
 		}
 		return super.onCreateDialog(id);
 	}
