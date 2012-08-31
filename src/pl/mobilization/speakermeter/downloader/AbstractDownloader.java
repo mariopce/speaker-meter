@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -86,14 +87,14 @@ public abstract class AbstractDownloader {
 			if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
 				// Closes the connection when status is not OK
 				response.getEntity().getContent().close();
-				return;
+				throw new HttpException(statusLine.getReasonPhrase());
 			}
 
 			String json = extractPageAsString(response);
 
 			processAnswer(json);
 		} catch (Exception e) {
-			Log.e(TAG, "Exception", e);
+			Log.e(TAG, "Exception occured during processing response", e);
 			exceptionHandler(e);
 		} finally {
 			cleanUp();
