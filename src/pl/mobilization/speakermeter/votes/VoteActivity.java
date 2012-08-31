@@ -154,11 +154,11 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		int votesUp = speaker.getVotesUp();
 		int votesDown = speaker.getVotesDown();
 
-		if (height == 0 || (votesDown == 0 && votesUp == 0))
+		if (height == 0) 
 			return;
 
-		int votesUpHeight = height / 3 * (votesDown + 2 * votesUp)
-				/ (votesDown + votesUp);
+		int votesUpHeight = height / 3 * (3 + votesDown + 2 * votesUp)
+				/ (votesDown + votesUp + 2);
 
 		LayoutParams layoutParams = textViewUp.getLayoutParams();
 		layoutParams.height = votesUpHeight;
