@@ -138,7 +138,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		Log.d(TAG, String.format("%s.showDialog()", this));
 		showDialog(PROGRESS_DIALOG_ID);
 
-		voteRunnable = new VoteRunnable(speaker.getId(), true);
+		voteRunnable = new VoteRunnable(speaker.getId(), isUp);
 		new Thread(voteRunnable).start();
 	}
 
