@@ -104,7 +104,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		return onCreateDialog(id, null);
 	}
 
-	@Override
 	protected Dialog onCreateDialog(int id, Bundle args) {
 		if (id == PROGRESS_DIALOG_ID) {
 			return ProgressDialog.show(
