@@ -100,7 +100,7 @@ public class SpeakerListActivity extends RoboActivity implements
 		return onCreateDialog(id, null);
 	}
 	
-	@Override
+	
 	protected Dialog onCreateDialog(int id, Bundle bundle) {
 		if (id == PROGRESS_DIALOG_ID) {
 			return ProgressDialog.show(this, getString(R.string.update), getString(R.string.obtaining_list));
