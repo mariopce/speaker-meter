@@ -71,15 +71,14 @@ public class SpeakerListActivity extends RoboActivity implements
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
 		
+		title = getString(R.string.update);
+		description = getString(R.string.obtaining_list);
+		
 		super.onResume();
 
 		if (adapter.getCount() == 0) {
 			launchJsonUpdate();
 		}
-		
-		 title = getString(R.string.update);
-		 description = getString(R.string.obtaining_list);
-		
 	}
 	
 	@Override
