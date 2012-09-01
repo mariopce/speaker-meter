@@ -7,7 +7,10 @@ public class SpeakerTest extends AndroidTestCase {
 
 	
 	
-	public void testAaaa(){
-		Assert.assertEquals(false);
+	public void testExample(){
+		//GIVEN We have presentation 
+		//WHEN today
+		//THEN present
+		Assert.assertTrue("Shoule be true", false);
 	}
 }
