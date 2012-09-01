@@ -8,6 +8,6 @@ public class SpeakerTest extends AndroidTestCase {
 	
 	
 	public void testAaaa(){
-		Assert.assertEquals(true,true);
+		Assert.assertEquals(false);
 	}
 }
