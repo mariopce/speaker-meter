@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.dao.Speaker;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -45,16 +46,16 @@ public class SpeakerSetAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			convertView = inflater.inflate(android.R.layout.simple_list_item_2, null);	
+			convertView = inflater.inflate(R.layout.speaker_info, null);	
 		}
 		
 		Speaker speaker = getItem(position);
 		
-		TextView text1 = (TextView) convertView.findViewById(android.R.id.text1);
-		TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
+		TextView textViewSpeaker = (TextView) convertView.findViewById(R.id.textViewSpeaker);
+		TextView textViewPresentation = (TextView) convertView.findViewById(R.id.textViewPresentation);
 		
-		text1.setText(speaker.getName());
-		text2.setText(speaker.getPresentation());
+		textViewSpeaker.setText(speaker.getName());
+		textViewPresentation.setText(speaker.getPresentation());
 		
 		convertView.setTag(speaker);
 		return convertView;
