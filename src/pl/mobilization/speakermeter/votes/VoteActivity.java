@@ -81,6 +81,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	protected void onResume() {
 		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "speakers-db",
 				null);
+		
+
 		db = helper.getWritableDatabase();
 		daoMaster = new DaoMaster(db);
 		daoSession = daoMaster.newSession();

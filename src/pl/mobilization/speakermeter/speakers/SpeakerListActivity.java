@@ -11,6 +11,7 @@ import pl.mobilization.speakermeter.dao.SpeakerDao;
 import pl.mobilization.speakermeter.downloader.AbstractDownloader;
 import pl.mobilization.speakermeter.votes.VoteActivity;
 import roboguice.activity.RoboActivity;
+import roboguice.activity.RoboTabActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 import android.app.Activity;
@@ -19,12 +20,17 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 
 import com.google.gson.Gson;
 
@@ -51,36 +57,45 @@ public class SpeakerListActivity extends RoboActivity implements
 	private CharSequence title;
 
 	private CharSequence description;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@Override
 	protected void onResume() {
-		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "speakers-db", null);
-        db = helper.getWritableDatabase();
-        daoMaster = new DaoMaster(db);
-        daoSession = daoMaster.newSession();
-        speakerDao = daoSession.getSpeakerDao();
-        
-		adapter = new SpeakerSetAdapter(this, speakerDao.queryBuilder().orderAsc(pl.mobilization.speakermeter.dao.SpeakerDao.Properties.Name).list());
+		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "speakers-db",
+				null);
+		db = helper.getWritableDatabase();
+		daoMaster = new DaoMaster(db);
+		daoSession = daoMaster.newSession();
+		
+		int schemaVersion = daoMaster.getSchemaVersion();
+		
+		speakerDao = daoSession.getSpeakerDao();
+
+		adapter = new SpeakerSetAdapter(
+				this,
+				speakerDao
+						.queryBuilder()
+						.orderAsc(
+								pl.mobilization.speakermeter.dao.SpeakerDao.Properties.Name)
+						.list());
 
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
-		
+
 		title = getString(R.string.update);
 		description = getString(R.string.obtaining_list);
-		
+
 		super.onResume();
 
 		if (adapter.getCount() == 0) {
 			launchJsonUpdate();
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		db.close();
@@ -101,7 +116,7 @@ public class SpeakerListActivity extends RoboActivity implements
 		getMenuInflater().inflate(R.menu.votes_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		if (id == PROGRESS_DIALOG_ID) {
@@ -120,18 +135,19 @@ public class SpeakerListActivity extends RoboActivity implements
 
 	private class JSonDownloader extends AbstractDownloader implements Runnable {
 		private static final String URL = "http://mobilization.herokuapp.com/speakers/";
-		
+
 		public void cleanUp() {
 			removeDialog(PROGRESS_DIALOG_ID);
 		}
 
 		public void processAnswer(String json) {
 			Gson gson = new Gson();
-			final Speaker[] speakerFromJson = gson.fromJson(json, Speaker[].class);
+			final Speaker[] speakerFromJson = gson.fromJson(json,
+					Speaker[].class);
 			runOnUiThread(new Runnable() {
 				public void run() {
-					for(Speaker speaker: speakerFromJson) {
-						if(db.isOpen())
+					for (Speaker speaker : speakerFromJson) {
+						if (db.isOpen())
 							speakerDao.insertOrReplace(speaker);
 					}
 					adapter.addItems(speakerFromJson);
