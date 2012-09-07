@@ -1,5 +1,7 @@
-package pl.mobilization.speakermeter;
+package pl.mobilization.speakermeter.venues;
 
+import pl.mobilization.speakermeter.R;
+import pl.mobilization.speakermeter.R.layout;
 import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
 import roboguice.activity.RoboTabActivity;
 import roboguice.inject.ContentView;
@@ -9,7 +11,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
 @ContentView(R.layout.hall_list)
-public class HallListActivity extends RoboTabActivity{
+public class VenueTabActivity extends RoboTabActivity{
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {

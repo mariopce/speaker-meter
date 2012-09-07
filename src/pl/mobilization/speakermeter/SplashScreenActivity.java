@@ -1,5 +1,6 @@
 package pl.mobilization.speakermeter;
 
+import pl.mobilization.speakermeter.venues.VenueTabActivity;
 import roboguice.activity.RoboSplashActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +17,7 @@ public class SplashScreenActivity extends RoboSplashActivity {
 	
 	@Override
 	protected void startNextActivity() {
-		startActivity(new Intent(this, HallListActivity.class));
+		startActivity(new Intent(this, VenueTabActivity.class));
 	}
 
 }
