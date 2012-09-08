@@ -8,11 +8,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 
 import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.SpeakerMeterApplication;
-import pl.mobilization.speakermeter.dao.DaoMaster;
-import pl.mobilization.speakermeter.dao.DaoMaster.DevOpenHelper;
-import pl.mobilization.speakermeter.dao.DaoSession;
 import pl.mobilization.speakermeter.dao.Speaker;
-import pl.mobilization.speakermeter.dao.SpeakerDao;
 import pl.mobilization.speakermeter.downloader.AbstractDownloader;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -21,7 +17,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,10 +49,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	private TextView textViewPresentation;
 
 	private Speaker speaker;
-	private SQLiteDatabase db;
-	private DaoMaster daoMaster;
-	private DaoSession daoSession;
-	private SpeakerDao speakerDao;
 	private boolean isUp = false;
 	private String down;
 	private String up;
@@ -79,15 +70,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 	@Override
 	protected void onResume() {
-		DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "speakers-db",
-				null);
-		
-
-		db = helper.getWritableDatabase();
-		daoMaster = new DaoMaster(db);
-		daoSession = daoMaster.newSession();
-		speakerDao = daoSession.getSpeakerDao();
-
 		Intent intent = getIntent();
 		long speaker_id = intent.getLongExtra(SPEAKER_ID, UKNOWN_SPEAKER_ID);
 		if (speaker_id == UKNOWN_SPEAKER_ID) {
@@ -95,7 +77,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			return;
 		}
 
-		Speaker speaker = speakerDao.load(speaker_id);
 
 		if (speaker == null) {
 			finish();
@@ -104,12 +85,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		setSpeaker(speaker);
 
 		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		db.close();
-		super.onPause();
 	}
 
 	@Override
@@ -192,8 +167,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		public void processAnswer(String json) {
 			Gson gson = new Gson();
 			final Speaker updatedSpeaker = gson.fromJson(json, Speaker.class);
-			if (db.isOpen())
-				speakerDao.insertOrReplace(updatedSpeaker);
 
 			runOnUiThread(new Runnable() {
 				public void run() {

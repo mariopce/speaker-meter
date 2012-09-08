@@ -24,7 +24,7 @@ public class SpeakerSetAdapter extends BaseAdapter {
 			return lhs.getName().compareTo(rhs.getName());
 		}
 	});
-
+	
 	public SpeakerSetAdapter(Context context, Collection<Speaker> list) {
 		inflater = (LayoutInflater) context.getSystemService
 			      (Context.LAYOUT_INFLATER_SERVICE);

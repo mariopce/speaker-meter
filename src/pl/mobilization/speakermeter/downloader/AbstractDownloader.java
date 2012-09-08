@@ -3,6 +3,12 @@ package pl.mobilization.speakermeter.downloader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
@@ -21,8 +27,22 @@ import android.widget.Toast;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
-public abstract class AbstractDownloader {
+public abstract class AbstractDownloader<T> implements Future {
 	private static final String TAG = AbstractDownloader.class.getName();
+
+	private ReentrantLock lock = new ReentrantLock();
+
+	private boolean isCancelled;
+
+	private T result;
+
+	private boolean isDone;
+
+	private Condition isDoneC;
+
+	public AbstractDownloader() {
+		isDoneC = lock.newCondition();
+	}
 
 	public void addCookies(URI uri, CookieStore cookieStore) {
 	}
@@ -30,14 +50,14 @@ public abstract class AbstractDownloader {
 	public abstract URI createURI();
 
 	private void exceptionHandler(Exception e) {
-		final String exceptionString = getExceptionString(e);
-		getEnclosingClass().runOnUiThread(new Runnable() {
-
-			public void run() {
-				Toast.makeText(getEnclosingClass(), exceptionString,
-						Toast.LENGTH_LONG).show();
-			}
-		});
+		// final String exceptionString = getExceptionString(e);
+		// getEnclosingClass().runOnUiThread(new Runnable() {
+		//
+		// public void run() {
+		// Toast.makeText(getEnclosingClass(), exceptionString,
+		// Toast.LENGTH_LONG).show();
+		// }
+		// });
 
 	}
 
@@ -52,20 +72,19 @@ public abstract class AbstractDownloader {
 		return responseString;
 	}
 
-	public abstract Activity getEnclosingClass();
-
-	private String getExceptionString(Exception e) {
-		if (e instanceof IOException) {
-			return getEnclosingClass().getResources().getString(
-					R.string.problem_connection, e.getLocalizedMessage());
-		}
-		if (e instanceof JsonParseException) {
-			return getEnclosingClass().getResources().getString(
-					R.string.problem_json, e.getLocalizedMessage());
-		}
-		return getEnclosingClass().getResources().getString(
-				R.string.problem_uknown, e.getLocalizedMessage());
-	}
+	//
+	// private String getExceptionString(Exception e) {
+	// if (e instanceof IOException) {
+	// return getResources().getString(
+	// R.string.problem_connection, e.getLocalizedMessage());
+	// }
+	// if (e instanceof JsonParseException) {
+	// return getEnclosingClass().getResources().getString(
+	// R.string.problem_json, e.getLocalizedMessage());
+	// }
+	// return getEnclosingClass().getResources().getString(
+	// R.string.problem_uknown, e.getLocalizedMessage());
+	// }
 
 	public abstract void processAnswer(String json) throws JsonSyntaxException;
 
@@ -99,5 +118,50 @@ public abstract class AbstractDownloader {
 		} finally {
 			cleanUp();
 		}
+
+	}
+
+	public boolean cancel(boolean mayInterruptIfRunning) {
+		Thread.currentThread().interrupt();
+		this.isCancelled = true;
+		return false;
+	}
+
+	public T get() throws InterruptedException, ExecutionException {
+		isDoneC.await();
+		isDoneC.
+		return result;
+	}
+
+	public T get(long timeout, TimeUnit unit) throws InterruptedException,
+			ExecutionException, TimeoutException {
+
+		try {
+			lock.lock();
+			if (isDoneC.await(timeout, unit))
+			return result;
+
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public boolean isCancelled() {
+		return isCancelled;
+	}
+
+	public boolean isDone() {
+		return isDone;
+	}
+
+	protected void setResult(T result) {
+		try {
+			lock.lock();
+			isDoneC.signalAll();
+			this.result = result;
+		} finally {
+			lock.unlock();
+		}
+
 	}
 }
