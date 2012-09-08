@@ -40,7 +40,7 @@
             android:layout_alignBottom="@+id/textViewTime"
             android:layout_alignParentRight="true"
             android:text="F2"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
 </LinearLayout>
