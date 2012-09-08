@@ -12,14 +12,14 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".SpeakerMeterApplication"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:name=".SpeakerMeterApplication" >
         <activity
-            android:name=".SplashScreenActivity"
             android:label="@string/app_name"
+            android:name=".SplashScreenActivity"
             android:noHistory="true" >
-            <intent-filter>
+            <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,13 +28,9 @@
         <activity android:name=".speakers.SpeakerListActivity" />
         <activity android:name=".votes.VoteActivity" />
         <activity
-            android:name=".venues.VenueTabActivity"
-            android:label="@string/title_activity_hall_list" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:label="@string/title_activity_hall_list"
+            android:launchMode="singleTop"
+            android:name=".venues.VenueTabActivity" >
         </activity>
     </application>
 

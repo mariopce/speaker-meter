@@ -19,15 +19,11 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import pl.mobilization.speakermeter.R;
-import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
-public abstract class AbstractDownloader<T> implements Future {
+public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 	private static final String TAG = AbstractDownloader.class.getName();
 
 	private ReentrantLock lock = new ReentrantLock();
@@ -38,10 +34,13 @@ public abstract class AbstractDownloader<T> implements Future {
 
 	private boolean isDone;
 
-	private Condition isDoneC;
+	private Condition isDoneCondition;
 
-	public AbstractDownloader() {
-		isDoneC = lock.newCondition();
+	private Exception exception;
+
+	public AbstractDownloader() 
+	{
+		isDoneCondition = lock.newCondition();
 	}
 
 	public void addCookies(URI uri, CookieStore cookieStore) {
@@ -50,26 +49,21 @@ public abstract class AbstractDownloader<T> implements Future {
 	public abstract URI createURI();
 
 	private void exceptionHandler(Exception e) {
-		// final String exceptionString = getExceptionString(e);
-		// getEnclosingClass().runOnUiThread(new Runnable() {
-		//
-		// public void run() {
-		// Toast.makeText(getEnclosingClass(), exceptionString,
-		// Toast.LENGTH_LONG).show();
-		// }
-		// });
-
+		this.exception = e;
 	}
-
-	public abstract void cleanUp();
 
 	private String extractPageAsString(HttpResponse response)
 			throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		response.getEntity().writeTo(out);
-		out.close();
-		String responseString = out.toString();
-		return responseString;
+		try {
+			response.getEntity().writeTo(out);
+			String responseString = out.toString();
+			return responseString;
+		}
+		finally {
+			out.close();
+		}
+		
 	}
 
 	//
@@ -101,6 +95,9 @@ public abstract class AbstractDownloader<T> implements Future {
 
 			httpclient.setCookieStore(cookieStore);
 
+			if(isCancelled)
+				return;
+
 			response = httpclient.execute(request);
 			StatusLine statusLine = response.getStatusLine();
 			if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
@@ -108,6 +105,9 @@ public abstract class AbstractDownloader<T> implements Future {
 				response.getEntity().getContent().close();
 				throw new HttpException(statusLine.getReasonPhrase());
 			}
+			
+			if(isCancelled)
+				return;
 
 			String json = extractPageAsString(response);
 
@@ -116,20 +116,25 @@ public abstract class AbstractDownloader<T> implements Future {
 			Log.e(TAG, "Exception occured during processing response", e);
 			exceptionHandler(e);
 		} finally {
-			cleanUp();
+			
 		}
 
 	}
 
 	public boolean cancel(boolean mayInterruptIfRunning) {
-		Thread.currentThread().interrupt();
 		this.isCancelled = true;
 		return false;
 	}
 
 	public T get() throws InterruptedException, ExecutionException {
-		isDoneC.await();
-		isDoneC.
+		try {
+			lock.lock();
+			while (!isDone)
+				isDoneCondition.await();
+
+		} finally {
+			lock.unlock();
+		}
 		return result;
 	}
 
@@ -138,12 +143,13 @@ public abstract class AbstractDownloader<T> implements Future {
 
 		try {
 			lock.lock();
-			if (isDoneC.await(timeout, unit))
-			return result;
+			if (!isDone)
+				isDoneCondition.await(timeout, unit);
 
 		} finally {
 			lock.unlock();
 		}
+		return result;
 	}
 
 	public boolean isCancelled() {
@@ -157,11 +163,11 @@ public abstract class AbstractDownloader<T> implements Future {
 	protected void setResult(T result) {
 		try {
 			lock.lock();
-			isDoneC.signalAll();
+			this.isDone = true;
 			this.result = result;
+			isDoneCondition.signalAll();
 		} finally {
 			lock.unlock();
 		}
-
 	}
 }

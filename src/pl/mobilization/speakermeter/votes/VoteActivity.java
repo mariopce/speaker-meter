@@ -157,7 +157,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			this.isUp = isUp;
 		}
 
-		@Override
 		public void cleanUp() {
 			Log.d(TAG, String.format("%s.remove()", VoteActivity.this));
 			removeDialog(PROGRESS_DIALOG_ID);
@@ -192,7 +191,6 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			cookieStore.addCookie(cookie);
 		}
 
-		@Override
 		public Activity getEnclosingClass() {
 			return VoteActivity.this;
 		}

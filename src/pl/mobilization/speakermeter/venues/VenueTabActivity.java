@@ -23,11 +23,11 @@ public class VenueTabActivity extends RoboTabActivity {
 
 	private static final String START_TIME = "START_TIME";
 
+	public static final String SPEAKER = "SPEAKER";
+
 	private Handler handler;
 
 	private ProgressDialog progressDialog;
-
-	private int counter;
 
 	private long startTime;
 
@@ -38,19 +38,26 @@ public class VenueTabActivity extends RoboTabActivity {
 		TabHost tabHost = getTabHost();
 
 		tabHost.setId(android.R.id.tabhost);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		recreateTabs();
+
+		handler = new Handler();
+		new SpeakerUpdateChecker().run();
+	}
+
+	private void recreateTabs() {
+		TabHost tabHost = getTabHost();
+		tabHost.clearAllTabs();
 
 		TabSpec tabSpec = tabHost.newTabSpec("All").setIndicator("All venues");
 		tabSpec.setContent(new Intent(this, SpeakerListActivity.class));
 		tabHost.addTab(tabSpec);
-
-		recreateTabs(tabHost);
-
-		handler = new Handler();
-
-		new SpeakerUpdateChecker().run();
-	}
-
-	private void recreateTabs(TabHost tabHost) {
+		
 		Collection<String> venueList = ((SpeakerMeterApplication) getApplication())
 				.getVenues();
 
@@ -96,7 +103,7 @@ public class VenueTabActivity extends RoboTabActivity {
 		handler = new Handler();
 		handler.post(new SpeakerUpdateChecker());
 
-		getSpeakerMeterApplication().launchSpeakersUpdate();
+		getSpeakerMeterApplication().launchSpeakerUpdate();
 	}
 
 	private SpeakerMeterApplication getSpeakerMeterApplication() {
@@ -124,20 +131,23 @@ public class VenueTabActivity extends RoboTabActivity {
 				removeDialog(PROGRESS_DIALOG_ID);
 				return;
 			}
-
-			if (hasCompleted()) {
-
+			
+			if (!hasUpdatePending()) {
+				removeDialog(PROGRESS_DIALOG_ID);
+				recreateTabs();
 				return;
 			}
+			
+			
 			handler.postDelayed(this, CHECK_INTERVAL);
+		}
+
+		private boolean hasUpdatePending() {
+			return getSpeakerMeterApplication().hasSpeakerUpdatePending();
 		}
 
 		private boolean hasTimedOut() {
 			return System.currentTimeMillis() - startTime > MAX_WAIT_TIME;
-		}
-
-		private boolean hasCompleted() {
-			return !getSpeakerMeterApplication().hasPendingSpeakersUpdate();
 		}
 	}
 }

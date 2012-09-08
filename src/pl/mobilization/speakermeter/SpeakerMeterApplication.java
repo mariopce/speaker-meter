@@ -4,14 +4,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 import pl.mobilization.speakermeter.dao.DaoMaster;
 import pl.mobilization.speakermeter.dao.DaoMaster.DevOpenHelper;
 import pl.mobilization.speakermeter.dao.DaoSession;
 import pl.mobilization.speakermeter.dao.Speaker;
 import pl.mobilization.speakermeter.dao.SpeakerDao;
-import pl.mobilization.speakermeter.downloaders.JSonDownloader;
+import pl.mobilization.speakermeter.downloaders.SpeakerListDownloader;
+import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,7 +30,8 @@ public class SpeakerMeterApplication extends Application {
 	private DaoMaster daoMaster;
 	private DaoSession daoSession;
 	private SpeakerDao speakerDao;
-	
+	private SpeakerListDownloader speakerDownloader;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -47,8 +51,6 @@ public class SpeakerMeterApplication extends Application {
 		daoMaster = new DaoMaster(db);
 		daoSession = daoMaster.newSession();
 		speakerDao = daoSession.getSpeakerDao();
-		
-		
 	}
 
 	private void saveUUID(SharedPreferences sharedPreferences, String deviceId) {
@@ -79,23 +81,54 @@ public class SpeakerMeterApplication extends Application {
 						pl.mobilization.speakermeter.dao.SpeakerDao.Properties.Name)
 				.list();
 	}
-	
+
 	public Collection<String> getVenues() {
 		Set<String> venues = new TreeSet<String>();
-		
-		for(Speaker speaker : getSpeakerList()) {
+
+		for (Speaker speaker : getSpeakerList()) {
 			String venue = speaker.getVenue();
-			if(!Strings.isNullOrEmpty(venue))
+			if (!Strings.isNullOrEmpty(venue))
 				venues.add(venue);
 		}
 		return venues;
 	}
 
-	public void launchSpeakersUpdate() {
-		new Thread
-	}
+	public void launchSpeakerUpdate() {
+		final SpeakerListDownloader speakerListDownloader = new SpeakerListDownloader(
+				this);
+		
+		if(this.speakerDownloader != null) {
+			this.speakerDownloader.cancel(true);
+		}
+		this.speakerDownloader = speakerListDownloader;
 
-	public boolean hasPendingSpeakersUpdate() {
-		return false;
+		new Thread(speakerListDownloader).start();
+		final Handler handler = new Handler();
+
+		handler.postDelayed(new Runnable() {
+
+			public void run() {
+				if (!speakerListDownloader.isDone()) {
+					handler.postDelayed(this, 1000);
+					return;
+				}
+				try {
+					Speaker[] speakers = speakerListDownloader.get();
+					speakerDao.insertOrReplaceInTx(speakers);
+				} catch (InterruptedException e) {
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				} finally {
+				}
+			}
+		}, 1000);
+		
+	}
+	
+	public boolean hasSpeakerUpdatePending() {
+		if (this.speakerDownloader == null)
+			return false;
+		
+		return !this.speakerDownloader.isDone();
 	}
 }
