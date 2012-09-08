@@ -17,8 +17,7 @@
     <string name="up">up</string>
     <string name="down">down</string>
     <string name="sending_vote">Sending your vote</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_hall_list">HallListActivity</string>
+    <string name="title_activity_hall_list">Venues</string>
+    <string name="venues">All venues</string>
 
 </resources>
