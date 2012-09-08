@@ -58,15 +58,15 @@ public class SpeakerListActivity extends RoboActivity implements
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(this);
 
-
 		super.onResume();
 	}
 
 	public void onItemClick(AdapterView<?> adapter, View view, int position,
 			long id) {
 		Intent intent = new Intent(this, VoteActivity.class);
+		long itemIdAtPosition = adapter.getItemIdAtPosition(position);
 		intent.putExtra(VoteActivity.SPEAKER_ID,
-				adapter.getItemIdAtPosition(position));
+				itemIdAtPosition);
 
 		startActivity(intent);
 	}

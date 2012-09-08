@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+<pl.mobilization.speakermeter.tabs.NPEImmuneTabHost xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -11,9 +11,10 @@
             android:id="@android:id/tabs"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
+            
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
     </LinearLayout>
-</TabHost>
+</pl.mobilization.speakermeter.tabs.NPEImmuneTabHost>

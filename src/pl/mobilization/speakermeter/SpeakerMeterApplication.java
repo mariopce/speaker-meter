@@ -12,9 +12,7 @@ import pl.mobilization.speakermeter.dao.DaoSession;
 import pl.mobilization.speakermeter.dao.Speaker;
 import pl.mobilization.speakermeter.dao.SpeakerDao;
 import pl.mobilization.speakermeter.downloaders.SpeakerListDownloader;
-import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
 import android.app.Application;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
@@ -130,5 +128,9 @@ public class SpeakerMeterApplication extends Application {
 			return false;
 		
 		return !this.speakerDownloader.isDone();
+	}
+
+	public Speaker getSpeaker(long speaker_id) {
+		return speakerDao.load(speaker_id);
 	}
 }

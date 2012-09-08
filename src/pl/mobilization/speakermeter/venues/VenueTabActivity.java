@@ -39,11 +39,11 @@ public class VenueTabActivity extends RoboTabActivity {
 
 		tabHost.setId(android.R.id.tabhost);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		recreateTabs();
 
 		handler = new Handler();
@@ -52,22 +52,27 @@ public class VenueTabActivity extends RoboTabActivity {
 
 	private void recreateTabs() {
 		TabHost tabHost = getTabHost();
+		int currentTab = tabHost.getCurrentTab();
+		tabHost.setCurrentTab(0);
+		
 		tabHost.clearAllTabs();
 
-		TabSpec tabSpec = tabHost.newTabSpec("All").setIndicator("All venues");
+		TabSpec tabSpec = tabHost.newTabSpec(getString(R.string.venues)).setIndicator(getString(R.string.venues));
 		tabSpec.setContent(new Intent(this, SpeakerListActivity.class));
 		tabHost.addTab(tabSpec);
-		
+
 		Collection<String> venueList = ((SpeakerMeterApplication) getApplication())
 				.getVenues();
-
+		
 		for (String venue : venueList) {
-			TabSpec tabSpec1 = tabHost.newTabSpec(venue).setIndicator(venue);
+			TabSpec localTabSpec = tabHost.newTabSpec(venue).setIndicator(venue);
 			Intent intent = new Intent(this, SpeakerListActivity.class);
 			intent.putExtra(SpeakerListActivity.VENUE, venue);
-			tabSpec1.setContent(intent);
-			tabHost.addTab(tabSpec1);
+			localTabSpec.setContent(intent);
+			tabHost.addTab(localTabSpec);
 		}
+		
+		tabHost.setCurrentTab(currentTab);
 	}
 
 	@Override
@@ -131,14 +136,13 @@ public class VenueTabActivity extends RoboTabActivity {
 				removeDialog(PROGRESS_DIALOG_ID);
 				return;
 			}
-			
+
 			if (!hasUpdatePending()) {
 				removeDialog(PROGRESS_DIALOG_ID);
 				recreateTabs();
 				return;
 			}
-			
-			
+
 			handler.postDelayed(this, CHECK_INTERVAL);
 		}
 

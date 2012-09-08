@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.dao.Speaker;
 import android.content.Context;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,10 @@ public class SpeakerSetAdapter extends BaseAdapter {
 	private Set<Speaker> backingSet = new TreeSet<Speaker>(new Comparator<Speaker>() {
 
 		public int compare(Speaker lhs, Speaker rhs) {
-			return lhs.getName().compareTo(rhs.getName());
+			int dateCompare = lhs.getStart_time().compareTo(rhs.getEnd_time());
+			if(dateCompare != 0)
+				return dateCompare;
+			return lhs.getVenue().compareTo(rhs.getVenue());
 		}
 	});
 	
@@ -53,9 +57,17 @@ public class SpeakerSetAdapter extends BaseAdapter {
 		
 		TextView textViewSpeaker = (TextView) convertView.findViewById(R.id.textViewSpeaker);
 		TextView textViewPresentation = (TextView) convertView.findViewById(R.id.textViewPresentation);
+		TextView textViewRoom = (TextView) convertView.findViewById(R.id.textViewRoom);
+		TextView textViewTime = (TextView) convertView.findViewById(R.id.textViewTime);
 		
 		textViewSpeaker.setText(speaker.getName());
 		textViewPresentation.setText(speaker.getPresentation());
+		textViewRoom.setText(speaker.getVenue());
+		
+		CharSequence startTime = DateFormat.format("hh:mm", speaker.getStart_time());
+		CharSequence endTime = DateFormat.format("hh:mm", speaker.getEnd_time());
+		
+		textViewTime.setText(String.format("%s-%s", startTime, endTime));
 		
 		convertView.setTag(speaker);
 		return convertView;

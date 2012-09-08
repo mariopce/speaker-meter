@@ -70,6 +70,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 	@Override
 	protected void onResume() {
+		super.onResume();
 		Intent intent = getIntent();
 		long speaker_id = intent.getLongExtra(SPEAKER_ID, UKNOWN_SPEAKER_ID);
 		if (speaker_id == UKNOWN_SPEAKER_ID) {
@@ -77,14 +78,16 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			return;
 		}
 
+		setSpeaker(getSpeakerMeterApplication().getSpeaker(speaker_id));
 
 		if (speaker == null) {
 			finish();
 			return;
 		}
-		setSpeaker(speaker);
+	}
 
-		super.onResume();
+	private SpeakerMeterApplication getSpeakerMeterApplication() {
+		return (SpeakerMeterApplication) getApplication();
 	}
 
 	@Override
@@ -103,6 +106,9 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	}
 
 	private void setSpeaker(Speaker speaker) {
+		if(speaker == null)
+			return;
+		
 		this.speaker = speaker;
 		textViewWho.setText(speaker.getName());
 		textViewPresentation.setText(speaker.getPresentation());

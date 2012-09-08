@@ -2,14 +2,9 @@ package pl.mobilization.speakermeter.downloaders;
 
 import java.net.URI;
 
-import pl.mobilization.speakermeter.ResultListener;
 import pl.mobilization.speakermeter.dao.Speaker;
 import pl.mobilization.speakermeter.downloader.AbstractDownloader;
-import pl.mobilization.speakermeter.speakers.SpeakerListActivity;
-import pl.mobilization.speakermeter.venues.VenueTabActivity;
-
 import android.app.Application;
-import android.content.Intent;
 
 import com.google.gson.Gson;
 
