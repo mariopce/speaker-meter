@@ -36,7 +36,7 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 
 	private Condition isDoneCondition;
 
-	private Exception exception;
+	private Throwable exception;
 
 	public AbstractDownloader() 
 	{
@@ -47,10 +47,6 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 	}
 
 	public abstract URI createURI();
-
-	private void exceptionHandler(Exception e) {
-		this.exception = e;
-	}
 
 	private String extractPageAsString(HttpResponse response)
 			throws IOException {
@@ -114,9 +110,16 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 			processAnswer(json);
 		} catch (Exception e) {
 			Log.e(TAG, "Exception occured during processing response", e);
-			exceptionHandler(e);
+			this.exception = e;
 		} finally {
-			
+			try {
+				lock.lock();
+				isDone = true;
+				isDoneCondition.signalAll();
+			}
+			finally {
+				lock.unlock();
+			}
 		}
 
 	}
@@ -135,6 +138,8 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 		} finally {
 			lock.unlock();
 		}
+		if (this.exception != null)
+			throw new ExecutionException(this.exception);
 		return result;
 	}
 

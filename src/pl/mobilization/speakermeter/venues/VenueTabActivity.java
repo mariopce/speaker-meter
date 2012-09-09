@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.widget.Toast;
 
 @ContentView(R.layout.hall_list)
 public class VenueTabActivity extends RoboTabActivity {
@@ -35,8 +36,9 @@ public class VenueTabActivity extends RoboTabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		handler = new Handler();
+		
 		TabHost tabHost = getTabHost();
-
 		tabHost.setId(android.R.id.tabhost);
 	}
 
@@ -46,15 +48,14 @@ public class VenueTabActivity extends RoboTabActivity {
 
 		recreateTabs();
 
-		handler = new Handler();
 		new SpeakerUpdateChecker().run();
 	}
 
 	private void recreateTabs() {
 		TabHost tabHost = getTabHost();
 		int currentTab = tabHost.getCurrentTab();
-		tabHost.setCurrentTab(0);
-		
+		if(currentTab != 0)
+			tabHost.setCurrentTab(0);
 		tabHost.clearAllTabs();
 
 		TabSpec tabSpec = tabHost.newTabSpec(getString(R.string.venues)).setIndicator(getString(R.string.venues));
@@ -72,7 +73,8 @@ public class VenueTabActivity extends RoboTabActivity {
 			tabHost.addTab(localTabSpec);
 		}
 		
-		tabHost.setCurrentTab(currentTab);
+		if(currentTab != 0)
+			tabHost.setCurrentTab(currentTab);
 	}
 
 	@Override
@@ -105,10 +107,9 @@ public class VenueTabActivity extends RoboTabActivity {
 		showDialog(PROGRESS_DIALOG_ID);
 
 		startTime = System.currentTimeMillis();
-		handler = new Handler();
 		handler.post(new SpeakerUpdateChecker());
 
-		getSpeakerMeterApplication().launchSpeakerUpdate();
+		getSpeakerMeterApplication().launchSpeakersUpdate();
 	}
 
 	private SpeakerMeterApplication getSpeakerMeterApplication() {
@@ -129,7 +130,7 @@ public class VenueTabActivity extends RoboTabActivity {
 
 	private class SpeakerUpdateChecker implements Runnable {
 		private static final int MAX_WAIT_TIME = 10000;
-		public static final int CHECK_INTERVAL = 1000;
+		public static final int CHECK_INTERVAL = 1500;
 
 		public void run() {
 			if (hasTimedOut()) {
@@ -139,11 +140,23 @@ public class VenueTabActivity extends RoboTabActivity {
 
 			if (!hasUpdatePending()) {
 				removeDialog(PROGRESS_DIALOG_ID);
-				recreateTabs();
+				String error = getError();
+				if (error == null)
+					recreateTabs();
+				else
+					signalError(error);
 				return;
 			}
 
 			handler.postDelayed(this, CHECK_INTERVAL);
+		}
+
+		private void signalError(String e) {
+			Toast.makeText(VenueTabActivity.this, e, Toast.LENGTH_LONG).show();
+		}
+
+		private String getError() {
+			return getSpeakerMeterApplication().getSpeakerErrorString();
 		}
 
 		private boolean hasUpdatePending() {
