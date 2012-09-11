@@ -20,9 +20,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <RelativeLayout
-            android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-        >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
 
         <TextView
             android:id="@+id/textViewTime"
@@ -31,6 +30,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:text="08:30 - 09:30"
+                        android:layout_marginLeft="10dp"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
@@ -39,8 +39,10 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/textViewTime"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
             android:text="F2"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
+
 </LinearLayout>
