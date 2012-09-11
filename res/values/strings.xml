@@ -19,5 +19,6 @@
     <string name="sending_vote">Sending your vote</string>
     <string name="title_activity_hall_list">Venues</string>
     <string name="venues">All venues</string>
+    <string name="ok">Ok</string>
 
 </resources>

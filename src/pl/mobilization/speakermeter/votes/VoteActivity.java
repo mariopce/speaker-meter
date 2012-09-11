@@ -9,6 +9,7 @@ import roboguice.inject.InjectView;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -127,9 +128,18 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			startTime = System.currentTimeMillis();
 			handler.post(new VoteUpdateChecker());
 			getSpeakerMeterApplication().launchVoteUpdate(speaker, isUp);
-		}
-		else if(view.equals(imageViewSoldier)) {
-			Dialog dialog = new AlertDialog.Builder(this).setIcon(R.id.imageWho).setTitle(String.format("%s - %s", speaker.getPresentation(), speaker.getName())).setMessage(speaker.getDescription()).create();
+		} else if (view.equals(imageViewSoldier)) {
+			Dialog dialog = new AlertDialog.Builder(this)
+					.setIcon(R.id.imageWho)
+					.setTitle(
+							String.format("%s - %s", speaker.getPresentation(),
+									speaker.getName()))
+					.setMessage(speaker.getDescription())
+					.setPositiveButton(R.string.ok, new android.content.DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).create();
 			dialog.setOwnerActivity(this);
 			dialog.show();
 		}
