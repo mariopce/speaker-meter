@@ -31,6 +31,7 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
         public final static Property Venue = new Property(5, String.class, "venue", false, "VENUE");
         public final static Property Start_time = new Property(6, java.util.Date.class, "start_time", false, "START_TIME");
         public final static Property End_time = new Property(7, java.util.Date.class, "end_time", false, "END_TIME");
+        public final static Property Description = new Property(8, String.class, "description", false, "DESCRIPTION");
     };
 
 
@@ -53,7 +54,8 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
                 "'VOTES_DOWN' INTEGER NOT NULL ," + // 4: votes_down
                 "'VENUE' TEXT NOT NULL ," + // 5: venue
                 "'START_TIME' INTEGER NOT NULL ," + // 6: start_time
-                "'END_TIME' INTEGER NOT NULL );"); // 7: end_time
+                "'END_TIME' INTEGER NOT NULL ," + // 7: end_time
+                "'DESCRIPTION' TEXT NOT NULL);"); // 8: description
     }
 
     /** Drops the underlying database table. */
@@ -78,6 +80,7 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
         stmt.bindString(6, entity.getVenue());
         stmt.bindLong(7, entity.getStart_time().getTime());
         stmt.bindLong(8, entity.getEnd_time().getTime());
+        stmt.bindString(9, entity.getDescription());
     }
 
     /** @inheritdoc */
@@ -97,7 +100,8 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
             cursor.getInt(offset + 4), // votes_down
             cursor.getString(offset + 5), // venue
             new java.util.Date(cursor.getLong(offset + 6)), // start_time
-            new java.util.Date(cursor.getLong(offset + 7)) // end_time
+            new java.util.Date(cursor.getLong(offset + 7)), // end_time
+            cursor.getString(offset + 8)
         );
         return entity;
     }

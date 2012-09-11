@@ -25,15 +25,17 @@ public class Speaker implements Serializable {
     private java.util.Date start_time;
     /** Not-null value. */
     private java.util.Date end_time;
+    //** Not-null value. */
+	private String description;
 
-    public Speaker() {
+	public Speaker() {
     }
 
     public Speaker(Long id) {
         this.id = id;
     }
 
-    public Speaker(Long id, String name, String presentation, int votes_up, int votes_down, String venue, java.util.Date start_time, java.util.Date end_time) {
+    public Speaker(Long id, String name, String presentation, int votes_up, int votes_down, String venue, java.util.Date start_time, java.util.Date end_time, String description) {
         this.id = id;
         this.name = name;
         this.presentation = presentation;
@@ -42,6 +44,7 @@ public class Speaker implements Serializable {
         this.venue = venue;
         this.start_time = start_time;
         this.end_time = end_time;
+        this.description = description;
     }
 
     public Long getId() {
@@ -117,6 +120,15 @@ public class Speaker implements Serializable {
     public void setEnd_time(java.util.Date end_time) {
         this.end_time = end_time;
     }
+    
+
+    public String getDescription() {
+		return Strings.nullToEmpty(description);
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	@Override
 	public int hashCode() {

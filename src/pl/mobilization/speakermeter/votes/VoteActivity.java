@@ -6,6 +6,7 @@ import pl.mobilization.speakermeter.dao.Speaker;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +42,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	private TextView textViewWho;
 	@InjectView(R.id.textViewPresentation)
 	private TextView textViewPresentation;
+	@InjectView(R.id.imageWho)
+	private ImageView imageViewSoldier;
 
 	private Speaker speaker;
 	private boolean isUp = false;
@@ -58,7 +62,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		textViewUp.setOnClickListener(this);
 		textViewDown.setOnClickListener(this);
-		textViewWho.setOnClickListener(this);
+		imageViewSoldier.setOnClickListener(this);
 
 		title = getString(R.string.sending_vote);
 		up = getString(R.string.up);
@@ -98,7 +102,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setTitle(title);
 			dialog.setMessage(description);
-			dialog.setCancelable(true);
+			dialog.setCancelable(false);
 			return dialog;
 		}
 		return super.onCreateDialog(id);
@@ -124,11 +128,9 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			handler.post(new VoteUpdateChecker());
 			getSpeakerMeterApplication().launchVoteUpdate(speaker, isUp);
 		}
-		else if(view.equals(textViewWho)) {
-			Dialog dialog = new Dialog(this);
+		else if(view.equals(imageViewSoldier)) {
+			Dialog dialog = new AlertDialog.Builder(this).setIcon(R.id.imageWho).setTitle(String.format("%s - %s", speaker.getPresentation(), speaker.getName())).setMessage(speaker.getDescription()).create();
 			dialog.setOwnerActivity(this);
-			
-			dialog.setTitle(speaker.getName());
 			dialog.show();
 		}
 	}
