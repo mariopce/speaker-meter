@@ -25,7 +25,10 @@ public class SpeakerSetAdapter extends BaseAdapter {
 			int dateCompare = lhs.getStart_time().compareTo(rhs.getEnd_time());
 			if(dateCompare != 0)
 				return dateCompare;
-			return lhs.getVenue().compareTo(rhs.getVenue());
+			int venueCompare = lhs.getVenue().compareTo(rhs.getVenue());
+			if (venueCompare != 0)
+				return venueCompare;
+			return lhs.compareTo(rhs);
 		}
 	});
 	

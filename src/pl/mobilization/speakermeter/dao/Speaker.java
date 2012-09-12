@@ -10,7 +10,7 @@ import com.google.common.base.Strings;
 /**
  * Entity mapped to table SPEAKER.
  */
-public class Speaker implements Serializable {
+public class Speaker implements Serializable, Comparable<Speaker> {
 
     private Long id;
     /** Not-null value. */
@@ -153,6 +153,13 @@ public class Speaker implements Serializable {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Speaker another) {
+		if (another == null)
+			return -1;
+		return this.getName().compareTo(another.getName());
 	}
     
     

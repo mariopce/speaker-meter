@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.inject.Inject;
 
 @ContentView(R.layout.speaker_list)
 public class SpeakerListActivity extends RoboActivity implements
@@ -42,16 +43,7 @@ public class SpeakerListActivity extends RoboActivity implements
 		final String venue = intent.getStringExtra(VENUE);
 
 		Collection<Speaker> speakerList = ((SpeakerMeterApplication) getApplication())
-				.getSpeakerList();
-		if (venue != null) {
-			speakerList = Collections2.filter(speakerList,
-					new Predicate<Speaker>() {
-
-						public boolean apply(Speaker speaker) {
-							return venue.equals(speaker.getVenue());
-						}
-					});
-		}
+				.getSpeakerList(venue);
 
 		adapter = new SpeakerSetAdapter(this, speakerList);
 

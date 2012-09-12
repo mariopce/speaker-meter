@@ -14,17 +14,17 @@ import pl.mobilization.speakermeter.dao.Speaker;
 import pl.mobilization.speakermeter.dao.SpeakerDao;
 import pl.mobilization.speakermeter.downloaders.SpeakerListDownloader;
 import pl.mobilization.speakermeter.downloaders.VoteUpdateDownloader;
-import pl.mobilization.speakermeter.venues.VenueTabActivity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.telephony.TelephonyManager;
-import android.widget.Toast;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Collections2;
 import com.google.gson.JsonParseException;
 
 public class SpeakerMeterApplication extends Application {
@@ -209,5 +209,19 @@ public class SpeakerMeterApplication extends Application {
 		}
 
 		return exceptionString;
+	}
+
+	public Collection<Speaker> getSpeakerList(final String venue) {
+		Collection<Speaker> speakerList = getSpeakerList();
+		if (venue != null) {
+			speakerList = Collections2.filter(speakerList,
+					new Predicate<Speaker>() {
+						public boolean apply(Speaker speaker) {
+							String speakerVenue = speaker.getVenue();
+							return venue.equals(speakerVenue);
+						}
+					});
+		}
+		return speakerList;
 	}
 }
