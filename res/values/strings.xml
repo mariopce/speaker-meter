@@ -13,12 +13,13 @@
     <string name="problem_connection" formatted="false">Problem with connection to the Internet: %s</string>
     <string name="problem_uknown" formatted="false">Unexpected problem occured: %s</string>
     <string name="problem_json" formatted="false">Problem reading json: %s</string>
-    <string name="speaker_voted" formatted="false">You voted %s %s.\nPlease wait 30 seconds to vote again.</string>
+    <string name="speaker_voted" formatted="false">You voted %s %s.\nPlease wait %d seconds to vote again.</string>
     <string name="up">up</string>
     <string name="down">down</string>
     <string name="sending_vote">Sending your vote</string>
     <string name="title_activity_hall_list">Venues</string>
     <string name="venues">All venues</string>
-    <string name="ok">Ok</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="room">Room %s</string>
 
 </resources>

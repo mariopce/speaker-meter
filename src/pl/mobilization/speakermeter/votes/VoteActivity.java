@@ -26,12 +26,15 @@ import android.widget.Toast;
 public class VoteActivity extends RoboActivity implements OnClickListener,
 		OnGlobalLayoutListener {
 
+	private static final int MILISECONDS_IN_SECOND = 1000;
+	private static final int TIME_TO_NEXT_VOTE = 30;
+	private static final int REFRESH_TIME = 1000;
 	private static final String TAG = VoteActivity.class.getName();
 	public static final String SPEAKER_ID = "speaker_id";
 	private static final long UKNOWN_SPEAKER_ID = 0;
 	private static final int PROGRESS_DIALOG_ID = 1;
 	private static final String SPEAKER = "speaker";
-	private static final String UPDATE_TIME = "time";
+	private static final String VOTE_TIME = "vote_time";
 
 	@InjectView(R.id.textViewUp)
 	private View textViewUp;
@@ -51,14 +54,14 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	private String down;
 	private String up;
 	private String title;
-	private long startTime;
-	private Handler handler;
+	private long voteTime;
+	private Handler refreshHandler;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		handler = new Handler();
+		refreshHandler = new Handler();
 		root.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
 		textViewUp.setOnClickListener(this);
@@ -97,16 +100,33 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		if (id == PROGRESS_DIALOG_ID) {
-			String name = speaker.getName();
+			final String name = speaker.getName();
+			long remaining = calculateRemaining(voteTime);
 			String description = getString(R.string.speaker_voted, name,
-					isUp ? up : down);
-			ProgressDialog dialog = new ProgressDialog(this);
+					isUp ? up : down, remaining );
+			final ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setTitle(title);
 			dialog.setMessage(description);
 			dialog.setCancelable(false);
+			refreshHandler.postDelayed(new Runnable() {
+				
+				public void run() {
+					long remaining = calculateRemaining(voteTime);
+					String message = getString(R.string.speaker_voted, name,
+							isUp ? up : down, remaining );
+					dialog.setMessage(message);
+					if (remaining > 0)
+						refreshHandler.postDelayed(this, REFRESH_TIME);
+				}
+			}, REFRESH_TIME);
 			return dialog;
 		}
 		return super.onCreateDialog(id);
+	}
+
+	private long calculateRemaining(long voteTime) {
+		long remaining = TIME_TO_NEXT_VOTE - ((System.currentTimeMillis() - voteTime) / MILISECONDS_IN_SECOND);
+		return remaining > 0 ? remaining : 0;
 	}
 
 	private void setSpeaker(Speaker speaker) {
@@ -122,11 +142,11 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	public void onClick(View view) {
 		if (view.equals(textViewUp) || view.equals(textViewDown)) {
 			isUp = (view == textViewUp);
+			voteTime = System.currentTimeMillis();
 			Log.d(TAG, String.format("%s.showDialog()", this));
 			showDialog(PROGRESS_DIALOG_ID);
-
-			startTime = System.currentTimeMillis();
-			handler.post(new VoteUpdateChecker());
+			
+			refreshHandler.post(new VoteUpdateChecker());
 			getSpeakerMeterApplication().launchVoteUpdate(speaker, isUp);
 		} else if (view.equals(imageViewSoldier)) {
 			Dialog dialog = new AlertDialog.Builder(this)
@@ -135,7 +155,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 							String.format("%s - %s", speaker.getPresentation(),
 									speaker.getName()))
 					.setMessage(speaker.getDescription())
-					.setPositiveButton(R.string.ok, new android.content.DialogInterface.OnClickListener() {
+					.setPositiveButton(R.string.dismiss, new android.content.DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
 						}
@@ -171,21 +191,19 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putLong(UPDATE_TIME, startTime);
+		outState.putLong(VOTE_TIME, voteTime);
 		outState.putSerializable(SPEAKER, speaker);
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle state) {
-		startTime = state.getLong(UPDATE_TIME, 0L);
+		voteTime = state.getLong(VOTE_TIME, 0L);
 		speaker = (Speaker) state.getSerializable(SPEAKER);
 		super.onRestoreInstanceState(state);
 	}
 
 	private class VoteUpdateChecker implements Runnable {
-		private static final int MAX_WAIT_TIME = 30000;
-		public static final int CHECK_INTERVAL = 1000;
 
 		public void run() {
 			if (hasTimedOut()) {
@@ -207,7 +225,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 				}
 			}
 
-			handler.postDelayed(this, CHECK_INTERVAL);
+			refreshHandler.postDelayed(this, REFRESH_TIME);
 		}
 
 		private void signalError(String e) {
@@ -223,7 +241,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		}
 
 		private boolean hasTimedOut() {
-			return System.currentTimeMillis() - startTime > MAX_WAIT_TIME;
+			return System.currentTimeMillis() - voteTime > TIME_TO_NEXT_VOTE * MILISECONDS_IN_SECOND;
 		}
 	}
 }
