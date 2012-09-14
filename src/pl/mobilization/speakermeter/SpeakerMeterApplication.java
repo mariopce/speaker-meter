@@ -84,6 +84,7 @@ public class SpeakerMeterApplication extends Application {
 	public List<Speaker> getSpeakerList() {
 		return speakerDao
 				.queryBuilder()
+				.where(SpeakerDao.Properties.Visible.eq(Boolean.TRUE))
 				.orderAsc(
 						pl.mobilization.speakermeter.dao.SpeakerDao.Properties.Name)
 				.list();

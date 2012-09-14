@@ -17,34 +17,36 @@ public class Speaker implements Serializable, Comparable<Speaker> {
     private String name;
     /** Not-null value. */
     private String presentation;
-    private int votes_up;
-    private int votes_down;
     /** Not-null value. */
     private String venue;
+    /** Not-null value. */
+    private String description;
+    private int votes_up;
+    private int votes_down;
     /** Not-null value. */
     private java.util.Date start_time;
     /** Not-null value. */
     private java.util.Date end_time;
-    //** Not-null value. */
-	private String description;
+    private boolean visible;
 
-	public Speaker() {
+    public Speaker() {
     }
 
     public Speaker(Long id) {
         this.id = id;
     }
 
-    public Speaker(Long id, String name, String presentation, int votes_up, int votes_down, String venue, java.util.Date start_time, java.util.Date end_time, String description) {
+    public Speaker(Long id, String name, String presentation, String venue, String description, int votes_up, int votes_down, java.util.Date start_time, java.util.Date end_time, boolean visible) {
         this.id = id;
         this.name = name;
         this.presentation = presentation;
+        this.venue = venue;
+        this.description = description;
         this.votes_up = votes_up;
         this.votes_down = votes_down;
-        this.venue = venue;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.description = description;
+        this.visible = visible;
     }
 
     public Long getId() {
@@ -75,6 +77,26 @@ public class Speaker implements Serializable, Comparable<Speaker> {
         this.presentation = presentation;
     }
 
+    /** Not-null value. */
+    public String getVenue() {
+    	return Strings.nullToEmpty(venue);
+    }
+
+    /** Not-null value; ensure this value is available before it is saved to the database. */
+    public void setVenue(String venue) {
+        this.venue = venue;
+    }
+
+    /** Not-null value. */
+    public String getDescription() {
+        return Strings.nullToEmpty(description);
+    }
+
+    /** Not-null value; ensure this value is available before it is saved to the database. */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getVotes_up() {
         return votes_up;
     }
@@ -92,18 +114,8 @@ public class Speaker implements Serializable, Comparable<Speaker> {
     }
 
     /** Not-null value. */
-    public String getVenue() {
-        return Strings.nullToEmpty(venue);
-    }
-
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setVenue(String venue) {
-        this.venue = venue;
-    }
-
-    /** Not-null value. */
     public java.util.Date getStart_time() {
-        return Objects.firstNonNull(start_time, new Date());
+    	return Objects.firstNonNull(start_time, new Date());
     }
 
     /** Not-null value; ensure this value is available before it is saved to the database. */
@@ -120,16 +132,15 @@ public class Speaker implements Serializable, Comparable<Speaker> {
     public void setEnd_time(java.util.Date end_time) {
         this.end_time = end_time;
     }
+
+    public boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
     
-
-    public String getDescription() {
-		return Strings.nullToEmpty(description);
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -155,13 +166,10 @@ public class Speaker implements Serializable, Comparable<Speaker> {
 		return true;
 	}
 
-	@Override
 	public int compareTo(Speaker another) {
 		if (another == null)
 			return -1;
 		return this.getName().compareTo(another.getName());
 	}
-    
-    
 
 }
