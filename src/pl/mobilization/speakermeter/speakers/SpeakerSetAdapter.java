@@ -2,6 +2,7 @@ package pl.mobilization.speakermeter.speakers;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -58,6 +59,7 @@ public class SpeakerSetAdapter extends BaseAdapter {
 		
 		Speaker speaker = getItem(position);
 		
+		View speakerInfo = convertView.findViewById(R.id.speaker_info);
 		TextView textViewSpeaker = (TextView) convertView.findViewById(R.id.textViewSpeaker);
 		TextView textViewPresentation = (TextView) convertView.findViewById(R.id.textViewPresentation);
 		TextView textViewRoom = (TextView) convertView.findViewById(R.id.textViewRoom);
@@ -65,7 +67,12 @@ public class SpeakerSetAdapter extends BaseAdapter {
 		
 		textViewSpeaker.setText(speaker.getName());
 		textViewPresentation.setText(speaker.getPresentation());
-		textViewRoom.setText(speaker.getVenue());
+		textViewRoom.setText(inflater.getContext().getString(R.string.room, speaker.getVenue()));
+		
+		Date now = new Date();
+		if (!(now.after(speaker.getStart_time()) && now.before(speaker.getEnd_time()))) {
+				speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(R.color.soldier));
+		}
 		
 		CharSequence startTime = DateFormat.format("hh:mm", speaker.getStart_time());
 		CharSequence endTime = DateFormat.format("hh:mm", speaker.getEnd_time());
