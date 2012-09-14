@@ -70,7 +70,7 @@ public class SpeakerSetAdapter extends BaseAdapter {
 		textViewRoom.setText(inflater.getContext().getString(R.string.room, speaker.getVenue()));
 		
 		Date now = new Date();
-		if (!(now.after(speaker.getStart_time()) && now.before(speaker.getEnd_time()))) {
+		if (now.after(speaker.getStart_time()) && now.before(speaker.getEnd_time())) {
 				speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(R.color.soldier));
 		}
 		
