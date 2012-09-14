@@ -1,4 +1,4 @@
-package pl.mobilization.speakermeter.downloaders;
+package pl.mobilization.speakermeter.downloader;
 
 import java.net.URI;
 import java.util.Date;
@@ -8,7 +8,6 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 
 import pl.mobilization.speakermeter.SpeakerMeterApplication;
 import pl.mobilization.speakermeter.dao.Speaker;
-import pl.mobilization.speakermeter.downloader.AbstractDownloader;
 
 import com.google.gson.Gson;
 

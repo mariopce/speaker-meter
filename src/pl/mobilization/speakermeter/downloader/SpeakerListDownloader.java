@@ -1,9 +1,8 @@
-package pl.mobilization.speakermeter.downloaders;
+package pl.mobilization.speakermeter.downloader;
 
 import java.net.URI;
 
 import pl.mobilization.speakermeter.dao.Speaker;
-import pl.mobilization.speakermeter.downloader.AbstractDownloader;
 import android.app.Application;
 
 import com.google.gson.Gson;
