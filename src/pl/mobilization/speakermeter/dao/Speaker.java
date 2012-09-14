@@ -27,7 +27,7 @@ public class Speaker implements Serializable, Comparable<Speaker> {
     private java.util.Date start_time;
     /** Not-null value. */
     private java.util.Date end_time;
-    private boolean visible;
+    private boolean visible = true;
 
     public Speaker() {
     }
