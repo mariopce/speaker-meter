@@ -75,6 +75,9 @@ public class VenueTabActivity extends RoboTabActivity {
 		
 		if(currentTab != 0)
 			tabHost.setCurrentTab(currentTab);
+		
+		if (venueList.isEmpty())
+			launchJsonUpdate();
 	}
 
 	@Override
