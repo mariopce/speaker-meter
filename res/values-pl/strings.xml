@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="refresh">Odśwież</string>
+    <string name="app_name">Speaker meter</string>
+    <string name="voteup">Głosuj na tak</string>
+    <string name="votedown">Głosuj na nie</string>
+    <string name="votes" formatted="false">%d głosów na tak %d głosów na nie</string>
+    <string name="presentation">Tytuł pezentacji</string>
+    <string name="speaker">Prelegent</string>
+    <string name="update">Aktualizowanie</string>
+    <string name="obtaining_list">Pobieranie listy prelegentów</string>
+    <string name="problem_connection" formatted="false">Problem z połączeniem internetowym: %s</string>
+    <string name="problem_uknown" formatted="false">Nieoczekiwany błąd: %s</string>
+    <string name="problem_json" formatted="false">Problem z odczytaniem jsona: %s</string>
+    <string name="speaker_voted" formatted="false">Zagłosowałeś na  prelegenta %2s na %1s.\nPoczekaj %d sekund aby głosować ponownie.</string>
+    <string name="up">tak</string>
+    <string name="down">nie</string>
+    <string name="sending_vote">Wysyłanie głosu</string>
+    <string name="title_activity_hall_list">Sale i prezentacje</string>
+    <string name="venues">Wszystkie sale</string>
+    <string name="dismiss">Schowaj</string>
+    <string name="room">Sala %s</string>
+</resources>
