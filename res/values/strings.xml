@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="refresh">Refresh</string>
     <string name="app_name">Speaker meter</string>
     <string name="voteup">Vote up</string>
@@ -17,9 +16,8 @@
     <string name="up">up</string>
     <string name="down">down</string>
     <string name="sending_vote">Sending your vote</string>
-    <string name="title_activity_hall_list">Venues</string>
+    <string name="title_activity_hall_list">Venues &amp; presentations</string>
     <string name="venues">All venues</string>
     <string name="dismiss">Dismiss</string>
     <string name="room">Room %s</string>
-
 </resources>
