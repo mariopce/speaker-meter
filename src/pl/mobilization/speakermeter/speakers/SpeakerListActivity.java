@@ -16,10 +16,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.inject.Inject;
-
 @ContentView(R.layout.speaker_list)
 public class SpeakerListActivity extends RoboActivity implements
 		OnItemClickListener {
