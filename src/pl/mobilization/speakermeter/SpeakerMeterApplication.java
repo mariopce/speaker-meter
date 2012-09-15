@@ -27,6 +27,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Collections2;
 import com.google.gson.JsonParseException;
 
+import de.greenrobot.dao.WhereCondition;
+
 public class SpeakerMeterApplication extends Application {
 	public static final String UUID = "uuid";
 	private String uuid;

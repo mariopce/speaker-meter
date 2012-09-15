@@ -74,8 +74,8 @@ public class SpeakerSetAdapter extends BaseAdapter {
 				speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(R.color.soldier));
 		}
 		
-		CharSequence startTime = DateFormat.format("hh:mm", speaker.getStart_time());
-		CharSequence endTime = DateFormat.format("hh:mm", speaker.getEnd_time());
+		CharSequence startTime = DateFormat.format("kk:mm", speaker.getStart_time());
+		CharSequence endTime = DateFormat.format("kk:mm", speaker.getEnd_time());
 		
 		textViewTime.setText(String.format("%s-%s", startTime, endTime));
 		
