@@ -90,7 +90,7 @@ public class SpeakerDao extends AbstractDao<Speaker, Long> {
 		stmt.bindLong(7, entity.getVotes_down());
 		stmt.bindLong(8, entity.getStart_time().getTime());
 		stmt.bindLong(9, entity.getEnd_time().getTime());
-		stmt.bindLong(10, entity.getVisible() ? 1l : 0l);
+		stmt.bindLong(10, entity.isVisible() ? 1l : 0l);
 	}
 
 	/** @inheritdoc */

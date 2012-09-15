@@ -153,7 +153,7 @@ public class Speaker implements Serializable, Comparable<Speaker> {
 		this.end_time = end_time;
 	}
 
-	public boolean getVisible() {
+	public boolean isVisible() {
 		return visible;
 	}
 
@@ -190,6 +190,11 @@ public class Speaker implements Serializable, Comparable<Speaker> {
 		if (another == null)
 			return -1;
 		return this.getName().compareTo(another.getName());
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s - %s", getName(), getPresentation()); 
 	}
 
 }

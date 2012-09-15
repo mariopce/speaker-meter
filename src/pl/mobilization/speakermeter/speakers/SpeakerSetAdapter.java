@@ -10,15 +10,18 @@ import pl.mobilization.speakermeter.R;
 import pl.mobilization.speakermeter.dao.Speaker;
 import android.content.Context;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 
 public class SpeakerSetAdapter extends BaseAdapter {
+	private static final String TAG = SpeakerSetAdapter.class.getSimpleName();
 	LayoutInflater inflater = null;
 	private Set<Speaker> backingSet = new TreeSet<Speaker>(
 			new Comparator<Speaker>() {
@@ -73,14 +76,21 @@ public class SpeakerSetAdapter extends BaseAdapter {
 
 		textViewSpeaker.setText(speaker.getName());
 		textViewPresentation.setText(speaker.getPresentation());
-		textViewRoom.setText(inflater.getContext().getString(R.string.room,
-				speaker.getVenue()));
+		String venue = speaker.getVenue();
+		textViewRoom.setText(Strings.isNullOrEmpty(venue) ? "" : inflater
+				.getContext().getString(R.string.room, venue));
+
+		Log.d(TAG, speaker + speaker.getStart_time().toGMTString());
+		Log.d(TAG, speaker + speaker.getEnd_time().toGMTString());
 
 		Date now = new Date();
 		if (now.after(speaker.getStart_time())
 				&& now.before(speaker.getEnd_time())) {
 			speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(
 					R.color.soldier));
+		} else {
+			speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(
+					android.R.color.black));
 		}
 
 		CharSequence startTime = DateFormat.format("kk:mm",
@@ -104,5 +114,10 @@ public class SpeakerSetAdapter extends BaseAdapter {
 			backingSet.add(speaker);
 		}
 		notifyDataSetChanged();
+	}
+
+	@Override
+	public boolean isEnabled(int position) {
+		return getItem(position).isVisible();
 	}
 }
