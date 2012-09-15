@@ -20,26 +20,28 @@ import com.google.common.collect.Iterators;
 
 public class SpeakerSetAdapter extends BaseAdapter {
 	LayoutInflater inflater = null;
-	private Set<Speaker> backingSet = new TreeSet<Speaker>(new Comparator<Speaker>() {
+	private Set<Speaker> backingSet = new TreeSet<Speaker>(
+			new Comparator<Speaker>() {
 
-		public int compare(Speaker lhs, Speaker rhs) {
-			int dateCompare = lhs.getStart_time().compareTo(rhs.getEnd_time());
-			if(dateCompare != 0)
-				return dateCompare;
-			int venueCompare = lhs.getVenue().compareTo(rhs.getVenue());
-			if (venueCompare != 0)
-				return venueCompare;
-			return lhs.compareTo(rhs);
-		}
-	});
-	
+				public int compare(Speaker lhs, Speaker rhs) {
+					int dateCompare = lhs.getStart_time().compareTo(
+							rhs.getEnd_time());
+					if (dateCompare != 0)
+						return dateCompare;
+					int venueCompare = lhs.getVenue().compareTo(rhs.getVenue());
+					if (venueCompare != 0)
+						return venueCompare;
+					return lhs.compareTo(rhs);
+				}
+			});
+
 	public SpeakerSetAdapter(Context context, Collection<Speaker> list) {
-		inflater = (LayoutInflater) context.getSystemService
-			      (Context.LAYOUT_INFLATER_SERVICE);
-		
+		inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
 		backingSet.addAll(list);
 	}
-	
+
 	public int getCount() {
 		return backingSet.size();
 	}
@@ -54,42 +56,51 @@ public class SpeakerSetAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.speaker_info, null);	
+			convertView = inflater.inflate(R.layout.speaker_info, null);
 		}
-		
+
 		Speaker speaker = getItem(position);
-		
+
 		View speakerInfo = convertView.findViewById(R.id.speaker_info);
-		TextView textViewSpeaker = (TextView) convertView.findViewById(R.id.textViewSpeaker);
-		TextView textViewPresentation = (TextView) convertView.findViewById(R.id.textViewPresentation);
-		TextView textViewRoom = (TextView) convertView.findViewById(R.id.textViewRoom);
-		TextView textViewTime = (TextView) convertView.findViewById(R.id.textViewTime);
-		
+		TextView textViewSpeaker = (TextView) convertView
+				.findViewById(R.id.textViewSpeaker);
+		TextView textViewPresentation = (TextView) convertView
+				.findViewById(R.id.textViewPresentation);
+		TextView textViewRoom = (TextView) convertView
+				.findViewById(R.id.textViewRoom);
+		TextView textViewTime = (TextView) convertView
+				.findViewById(R.id.textViewTime);
+
 		textViewSpeaker.setText(speaker.getName());
 		textViewPresentation.setText(speaker.getPresentation());
-		textViewRoom.setText(inflater.getContext().getString(R.string.room, speaker.getVenue()));
-		
+		textViewRoom.setText(inflater.getContext().getString(R.string.room,
+				speaker.getVenue()));
+
 		Date now = new Date();
-		if (now.after(speaker.getStart_time()) && now.before(speaker.getEnd_time())) {
-				speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(R.color.soldier));
+		if (now.after(speaker.getStart_time())
+				&& now.before(speaker.getEnd_time())) {
+			speakerInfo.setBackgroundColor(speakerInfo.getResources().getColor(
+					R.color.soldier));
 		}
-		
-		CharSequence startTime = DateFormat.format("kk:mm", speaker.getStart_time());
-		CharSequence endTime = DateFormat.format("kk:mm", speaker.getEnd_time());
-		
+
+		CharSequence startTime = DateFormat.format("kk:mm",
+				speaker.getStart_time());
+		CharSequence endTime = DateFormat
+				.format("kk:mm", speaker.getEnd_time());
+
 		textViewTime.setText(String.format("%s-%s", startTime, endTime));
-		
+
 		convertView.setTag(speaker);
 		return convertView;
 	}
-	
+
 	public void addItem(Speaker speaker) {
 		backingSet.add(speaker);
 		notifyDataSetChanged();
 	}
-	
+
 	public void addItems(Speaker[] speakers) {
-		for(Speaker speaker: speakers) {
+		for (Speaker speaker : speakers) {
 			backingSet.add(speaker);
 		}
 		notifyDataSetChanged();

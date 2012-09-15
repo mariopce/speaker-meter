@@ -26,18 +26,22 @@ public class VenueTabActivity extends RoboTabActivity {
 
 	public static final String SPEAKER = "SPEAKER";
 
+	private static final String SAVED_TAB = "SAVED_TAB";
+
 	private Handler handler;
 
 	private ProgressDialog progressDialog;
 
 	private long startTime;
 
+	private int savedTab;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		handler = new Handler();
-		
+
 		TabHost tabHost = getTabHost();
 		tabHost.setId(android.R.id.tabhost);
 	}
@@ -51,31 +55,44 @@ public class VenueTabActivity extends RoboTabActivity {
 		new SpeakerUpdateChecker().run();
 	}
 
+	@Override
+	protected void onPause() {
+		savedTab = getTabHost().getCurrentTab();
+		super.onPause();
+	}
+
 	private void recreateTabs() {
 		TabHost tabHost = getTabHost();
+
 		int currentTab = tabHost.getCurrentTab();
-		if(currentTab != 0)
+
+		if (savedTab != 0)
 			tabHost.setCurrentTab(0);
+		else
+			savedTab = currentTab;
+
 		tabHost.clearAllTabs();
 
-		TabSpec tabSpec = tabHost.newTabSpec(getString(R.string.venues)).setIndicator(getString(R.string.venues));
+		TabSpec tabSpec = tabHost.newTabSpec(getString(R.string.venues))
+				.setIndicator(getString(R.string.venues));
 		tabSpec.setContent(new Intent(this, SpeakerListActivity.class));
 		tabHost.addTab(tabSpec);
 
 		Collection<String> venueList = ((SpeakerMeterApplication) getApplication())
 				.getVenues();
-		
+
 		for (String venue : venueList) {
-			TabSpec localTabSpec = tabHost.newTabSpec(venue).setIndicator(venue);
+			TabSpec localTabSpec = tabHost.newTabSpec(venue)
+					.setIndicator(venue);
 			Intent intent = new Intent(this, SpeakerListActivity.class);
 			intent.putExtra(SpeakerListActivity.VENUE, venue);
 			localTabSpec.setContent(intent);
 			tabHost.addTab(localTabSpec);
 		}
-		
-		if(currentTab != 0)
-			tabHost.setCurrentTab(currentTab);
-		
+
+		if (savedTab != 0)
+			tabHost.setCurrentTab(savedTab);
+
 		if (venueList.isEmpty())
 			launchJsonUpdate();
 	}
@@ -122,12 +139,16 @@ public class VenueTabActivity extends RoboTabActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putLong(START_TIME, startTime);
+		savedTab = getTabHost().getCurrentTab();
+		outState.putInt(SAVED_TAB, savedTab);
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle state) {
 		startTime = state.getLong(START_TIME, 0L);
+		savedTab = state.getInt(SAVED_TAB);
+		;
 		super.onRestoreInstanceState(state);
 	}
 

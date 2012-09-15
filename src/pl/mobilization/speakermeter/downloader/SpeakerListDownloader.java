@@ -7,7 +7,7 @@ import android.app.Application;
 
 import com.google.gson.Gson;
 
-public class SpeakerListDownloader extends AbstractDownloader<Speaker[]>  {
+public class SpeakerListDownloader extends AbstractDownloader<Speaker[]> {
 	private static final String URL = "http://mobilization.herokuapp.com/speakers/";
 	private Application application;
 

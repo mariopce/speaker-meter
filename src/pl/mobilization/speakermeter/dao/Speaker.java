@@ -12,135 +12,155 @@ import com.google.common.base.Strings;
  */
 public class Speaker implements Serializable, Comparable<Speaker> {
 
-    private Long id;
-    /** Not-null value. */
-    private String name;
-    /** Not-null value. */
-    private String presentation;
-    /** Not-null value. */
-    private String venue;
-    /** Not-null value. */
-    private String description;
-    private int votes_up;
-    private int votes_down;
-    /** Not-null value. */
-    private java.util.Date start_time;
-    /** Not-null value. */
-    private java.util.Date end_time;
-    private boolean visible = true;
+	private Long id;
+	/** Not-null value. */
+	private String name;
+	/** Not-null value. */
+	private String presentation;
+	/** Not-null value. */
+	private String venue;
+	/** Not-null value. */
+	private String description;
+	private int votes_up;
+	private int votes_down;
+	/** Not-null value. */
+	private java.util.Date start_time;
+	/** Not-null value. */
+	private java.util.Date end_time;
+	private boolean visible = true;
 
-    public Speaker() {
-    }
+	public Speaker() {
+	}
 
-    public Speaker(Long id) {
-        this.id = id;
-    }
+	public Speaker(Long id) {
+		this.id = id;
+	}
 
-    public Speaker(Long id, String name, String presentation, String venue, String description, int votes_up, int votes_down, java.util.Date start_time, java.util.Date end_time, boolean visible) {
-        this.id = id;
-        this.name = name;
-        this.presentation = presentation;
-        this.venue = venue;
-        this.description = description;
-        this.votes_up = votes_up;
-        this.votes_down = votes_down;
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.visible = visible;
-    }
+	public Speaker(Long id, String name, String presentation, String venue,
+			String description, int votes_up, int votes_down,
+			java.util.Date start_time, java.util.Date end_time, boolean visible) {
+		this.id = id;
+		this.name = name;
+		this.presentation = presentation;
+		this.venue = venue;
+		this.description = description;
+		this.votes_up = votes_up;
+		this.votes_down = votes_down;
+		this.start_time = start_time;
+		this.end_time = end_time;
+		this.visible = visible;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    /** Not-null value. */
-    public String getName() {
-        return Strings.nullToEmpty(name);
-    }
+	/** Not-null value. */
+	public String getName() {
+		return Strings.nullToEmpty(name);
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /** Not-null value. */
-    public String getPresentation() {
-        return Strings.nullToEmpty(presentation);
-    }
+	/** Not-null value. */
+	public String getPresentation() {
+		return Strings.nullToEmpty(presentation);
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setPresentation(String presentation) {
-        this.presentation = presentation;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setPresentation(String presentation) {
+		this.presentation = presentation;
+	}
 
-    /** Not-null value. */
-    public String getVenue() {
-    	return Strings.nullToEmpty(venue);
-    }
+	/** Not-null value. */
+	public String getVenue() {
+		return Strings.nullToEmpty(venue);
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setVenue(String venue) {
-        this.venue = venue;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setVenue(String venue) {
+		this.venue = venue;
+	}
 
-    /** Not-null value. */
-    public String getDescription() {
-        return Strings.nullToEmpty(description);
-    }
+	/** Not-null value. */
+	public String getDescription() {
+		return Strings.nullToEmpty(description);
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public int getVotes_up() {
-        return votes_up;
-    }
+	public int getVotes_up() {
+		return votes_up;
+	}
 
-    public void setVotes_up(int votes_up) {
-        this.votes_up = votes_up;
-    }
+	public void setVotes_up(int votes_up) {
+		this.votes_up = votes_up;
+	}
 
-    public int getVotes_down() {
-        return votes_down;
-    }
+	public int getVotes_down() {
+		return votes_down;
+	}
 
-    public void setVotes_down(int votes_down) {
-        this.votes_down = votes_down;
-    }
+	public void setVotes_down(int votes_down) {
+		this.votes_down = votes_down;
+	}
 
-    /** Not-null value. */
-    public java.util.Date getStart_time() {
-    	return Objects.firstNonNull(start_time, new Date());
-    }
+	/** Not-null value. */
+	public java.util.Date getStart_time() {
+		return Objects.firstNonNull(start_time, new Date());
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setStart_time(java.util.Date start_time) {
-        this.start_time = start_time;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setStart_time(java.util.Date start_time) {
+		this.start_time = start_time;
+	}
 
-    /** Not-null value. */
-    public java.util.Date getEnd_time() {
-    	return Objects.firstNonNull(end_time, new Date());
-    }
+	/** Not-null value. */
+	public java.util.Date getEnd_time() {
+		return Objects.firstNonNull(end_time, new Date());
+	}
 
-    /** Not-null value; ensure this value is available before it is saved to the database. */
-    public void setEnd_time(java.util.Date end_time) {
-        this.end_time = end_time;
-    }
+	/**
+	 * Not-null value; ensure this value is available before it is saved to the
+	 * database.
+	 */
+	public void setEnd_time(java.util.Date end_time) {
+		this.end_time = end_time;
+	}
 
-    public boolean getVisible() {
-        return visible;
-    }
+	public boolean getVisible() {
+		return visible;
+	}
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-    
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

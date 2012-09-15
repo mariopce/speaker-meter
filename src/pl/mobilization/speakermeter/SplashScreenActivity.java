@@ -10,11 +10,11 @@ public class SplashScreenActivity extends RoboSplashActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-	    super.onCreate(savedInstanceState);
-	    
-	    setContentView(R.layout.splash);
+		super.onCreate(savedInstanceState);
+
+		setContentView(R.layout.splash);
 	}
-	
+
 	@Override
 	protected void startNextActivity() {
 		startActivity(new Intent(this, VenueTabActivity.class));

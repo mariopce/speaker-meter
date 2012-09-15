@@ -38,8 +38,7 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 
 	private Throwable exception;
 
-	public AbstractDownloader() 
-	{
+	public AbstractDownloader() {
 		isDoneCondition = lock.newCondition();
 	}
 
@@ -55,11 +54,10 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 			response.getEntity().writeTo(out);
 			String responseString = out.toString();
 			return responseString;
-		}
-		finally {
+		} finally {
 			out.close();
 		}
-		
+
 	}
 
 	//
@@ -91,7 +89,7 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 
 			httpclient.setCookieStore(cookieStore);
 
-			if(isCancelled)
+			if (isCancelled)
 				return;
 
 			response = httpclient.execute(request);
@@ -101,8 +99,8 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 				response.getEntity().getContent().close();
 				throw new HttpException(statusLine.getReasonPhrase());
 			}
-			
-			if(isCancelled)
+
+			if (isCancelled)
 				return;
 
 			String json = extractPageAsString(response);
@@ -116,8 +114,7 @@ public abstract class AbstractDownloader<T> implements Runnable, Future<T> {
 				lock.lock();
 				isDone = true;
 				isDoneCondition.signalAll();
-			}
-			finally {
+			} finally {
 				lock.unlock();
 			}
 		}

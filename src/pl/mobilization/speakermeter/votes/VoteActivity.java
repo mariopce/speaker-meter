@@ -103,17 +103,17 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			final String name = speaker.getName();
 			long remaining = calculateRemaining(voteTime);
 			String description = getString(R.string.speaker_voted, name,
-					isUp ? up : down, remaining );
+					isUp ? up : down, remaining);
 			final ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setTitle(title);
 			dialog.setMessage(description);
 			dialog.setCancelable(false);
 			refreshHandler.postDelayed(new Runnable() {
-				
+
 				public void run() {
 					long remaining = calculateRemaining(voteTime);
 					String message = getString(R.string.speaker_voted, name,
-							isUp ? up : down, remaining );
+							isUp ? up : down, remaining);
 					dialog.setMessage(message);
 					if (remaining > 0)
 						refreshHandler.postDelayed(this, REFRESH_TIME);
@@ -125,7 +125,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 	}
 
 	private long calculateRemaining(long voteTime) {
-		long remaining = TIME_TO_NEXT_VOTE - ((System.currentTimeMillis() - voteTime) / MILISECONDS_IN_SECOND);
+		long remaining = TIME_TO_NEXT_VOTE
+				- ((System.currentTimeMillis() - voteTime) / MILISECONDS_IN_SECOND);
 		return remaining > 0 ? remaining : 0;
 	}
 
@@ -145,7 +146,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 			voteTime = System.currentTimeMillis();
 			Log.d(TAG, String.format("%s.showDialog()", this));
 			showDialog(PROGRESS_DIALOG_ID);
-			
+
 			refreshHandler.post(new VoteUpdateChecker());
 			getSpeakerMeterApplication().launchVoteUpdate(speaker, isUp);
 		} else if (view.equals(imageViewSoldier)) {
@@ -155,11 +156,14 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 							String.format("%s - %s", speaker.getPresentation(),
 									speaker.getName()))
 					.setMessage(speaker.getDescription())
-					.setPositiveButton(R.string.dismiss, new android.content.DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					}).create();
+					.setPositiveButton(
+							R.string.dismiss,
+							new android.content.DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).create();
 			dialog.setOwnerActivity(this);
 			dialog.show();
 		}
@@ -176,7 +180,7 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 
 		if (height == 0)
 			return;
-		
+
 		int votesDown = speaker.getVotes_down();
 		int votesUp = speaker.getVotes_up();
 
@@ -241,7 +245,8 @@ public class VoteActivity extends RoboActivity implements OnClickListener,
 		}
 
 		private boolean hasTimedOut() {
-			return System.currentTimeMillis() - voteTime > TIME_TO_NEXT_VOTE * MILISECONDS_IN_SECOND;
+			return System.currentTimeMillis() - voteTime > TIME_TO_NEXT_VOTE
+					* MILISECONDS_IN_SECOND;
 		}
 	}
 }
